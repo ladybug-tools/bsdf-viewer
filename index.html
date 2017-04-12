@@ -16,7 +16,8 @@
 <script src="https://d3js.org/d3.v3.min.js"></script>
 <script>
 
-var pcount = [1, 8 , 16, 20, 24, 24, 24, 16, 12];
+var pcount = [1, 8 , 16, 20, 24, 24, 24, 16, 12],
+    counter = [1, 9, 25, 45, 69, 93, 117, 133, 145];
 
 var width = 500,
     height = 500,
@@ -36,9 +37,9 @@ var svg = d3.select("body").append("svg")
 
 var gs = svg.selectAll("g").data(pcount).enter().append("g");
 
-// Add counter and lable to each path
+// TODO: Add lable to each path
 var path = gs.selectAll("path")
-    .data(function(d) {return Array(d).fill(d); })
+    .data(function(d) {return Array(d).fill(PI2 / d); })
   .enter().append("path")
     .attr("fill", function(d, i) { return color(i); })
 		.attr("stroke", function() { return 'black'; })
@@ -46,10 +47,11 @@ var path = gs.selectAll("path")
       	return arc
           .innerRadius(cwidth * j)
       		.outerRadius(cwidth * (j + 1))
-        	.startAngle(i * PI2 / d - (PI2 / (2 * d)) - HPI)
-        	.endAngle((i + 1) * PI2 / d - (PI2 / (2 * d)) - HPI)(); })
+        	.startAngle((i - 0.5) * d - HPI)
+        	.endAngle((i + 0.5) * d - HPI)(); })
 	.append("svg:title")		
-		.text(function(d, i, j) { return 'number: ' + (i + 1) + ' :: round: ' + (j + 1); });
+		.text(function(d, i, j) { 
+      if (j == 0) {return 1;} else {return counter[j - 1] + i + 1; }});
 
 
 </script>
