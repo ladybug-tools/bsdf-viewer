@@ -21,7 +21,8 @@ var pcount = [1, 8 , 16, 20, 24, 24, 24, 16, 12];
 var width = 500,
     height = 500,
     cwidth = 25,
-    PI2 = 2 * Math.PI;
+    PI2 = 2 * Math.PI
+		HPI = Math.PI / 2;
 
 var color = d3.scale.category20();
 
@@ -35,18 +36,20 @@ var svg = d3.select("body").append("svg")
 
 var gs = svg.selectAll("g").data(pcount).enter().append("g");
 
+// The angles should be modified to match the order of BSDF 
 var path = gs.selectAll("path")
     .data(function(d) {return Array(d).fill(d); })
   .enter().append("path")
     .attr("fill", function(d, i) { return color(i); })
 		.attr("stroke", function() { return 'black'; })
-		.attr("title", function(d, i, j) { return i + '::' + j; })
     .attr("d", function(d, i, j) {
       	return arc
           .innerRadius(cwidth * j)
       		.outerRadius(cwidth * (j + 1))
-        	.startAngle(i * PI2 / d - (PI2 / (2 * d)))
-        	.endAngle((i + 1) * PI2 / d - (PI2 / (2 * d)))(); });
+        	.startAngle(i * PI2 / d - (PI2 / (2 * d)) - HPI)
+        	.endAngle((i + 1) * PI2 / d - (PI2 / (2 * d)) - HPI)(); })
+	.append("svg:title")		
+		.text(function(d, i, j) { return 'number: ' + (i + 1) + ' :: round: ' + (j + 1); });
 
 
 </script>
