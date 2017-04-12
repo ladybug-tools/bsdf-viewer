@@ -36,7 +36,7 @@ var svg = d3.select("body").append("svg")
 
 var gs = svg.selectAll("g").data(pcount).enter().append("g");
 
-// The angles should be modified to match the order of BSDF 
+// Add counter and lable to each path
 var path = gs.selectAll("path")
     .data(function(d) {return Array(d).fill(d); })
   .enter().append("path")
