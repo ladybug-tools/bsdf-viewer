@@ -12,49 +12,42 @@
 }
 
 </style>
-<svg width="960" height="500"></svg>
-<script src="https://d3js.org/d3.v4.min.js"></script>
+<body></body>
+<script src="https://d3js.org/d3.v3.min.js"></script>
 <script>
 
-var svg = d3.select("svg"),
-    width = +svg.attr("width"),
-    height = +svg.attr("height"),
-    radius = Math.min(width, height) / 2,
-    g = svg.append("g").attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+var dataset = {
+  core: [1],
+  apples: [1, 1, 1, 1, 1, 1, 1, 1],
+  oranges: [53245, 28479, 19697, 24037, 40245],
+  lemons: [53245, 28479, 19697, 24037, 40245],
+  pears: [53245, 28479, 19697, 24037, 40245],
+  pineapples: [53245, 28479, 19697, 24037, 40245],
+};
 
-var color = d3.scaleOrdinal(["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"]);
+var width = 500,
+    height = 500,
+    cwidth = 20;
 
-var pie = d3.pie()
-    .sort(null)
-    .value(function(d) { return d.population; });
+var color = d3.scale.category20();
 
-var path = d3.arc()
-    .outerRadius(radius - 10)
-    .innerRadius(0);
+var pie = d3.layout.pie();
 
-var label = d3.arc()
-    .outerRadius(radius - 40)
-    .innerRadius(radius - 40);
+var arc = d3.svg.arc();
 
-d3.csv("data.csv", function(d) {
-  d.population = +d.population;
-  return d;
-}, function(error, data) {
-  if (error) throw error;
+var svg = d3.select("body").append("svg")
+    .attr("width", width)
+    .attr("height", height)
+    .append("g")
+    .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
 
-  var arc = g.selectAll(".arc")
-    .data(pie(data))
-    .enter().append("g")
-      .attr("class", "arc");
+var gs = svg.selectAll("g").data(d3.values(dataset)).enter().append("g");
+var path = gs.selectAll("path")
+    .data(function(d) { return pie(d); })
+  .enter().append("path")
+    .attr("fill", function(d, i) { return color(i); })
+    .attr("d", function(d, i, j) { return arc.innerRadius(cwidth*j)
+      	.outerRadius(cwidth * (j+1)).startAngle(j)(d); });
 
-  arc.append("path")
-      .attr("d", path)
-      .attr("fill", function(d) { return color(d.data.age); });
-
-  arc.append("text")
-      .attr("transform", function(d) { return "translate(" + label.centroid(d) + ")"; })
-      .attr("dy", "0.35em")
-      .text(function(d) { return d.data.age; });
-});
 
 </script>
