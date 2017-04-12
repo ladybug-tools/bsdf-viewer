@@ -16,24 +16,16 @@
 <script src="https://d3js.org/d3.v3.min.js"></script>
 <script>
 
-var dataset = {
-  core: [1],
-  apples: [1, 1, 1, 1, 1, 1, 1, 1],
-  oranges: [53245, 28479, 19697, 24037, 40245],
-  lemons: [53245, 28479, 19697, 24037, 40245],
-  pears: [53245, 28479, 19697, 24037, 40245],
-  pineapples: [53245, 28479, 19697, 24037, 40245],
-};
+var pcount = [1, 8 , 16, 20, 24, 24, 24, 16, 12];
 
 var width = 500,
     height = 500,
-    cwidth = 20;
+    cwidth = 25,
+    PI2 = 2 * Math.PI;
 
 var color = d3.scale.category20();
 
-var pie = d3.layout.pie();
-
-var arc = d3.svg.arc().startAngle(3.14);
+var arc = d3.svg.arc();
 
 var svg = d3.select("body").append("svg")
     .attr("width", width)
@@ -41,13 +33,20 @@ var svg = d3.select("body").append("svg")
     .append("g")
     .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
 
-var gs = svg.selectAll("g").data(d3.values(dataset)).enter().append("g");
+var gs = svg.selectAll("g").data(pcount).enter().append("g");
+
 var path = gs.selectAll("path")
-    .data(function(d) { return pie(d); })
+    .data(function(d) {return Array(d).fill(d); })
   .enter().append("path")
     .attr("fill", function(d, i) { return color(i); })
-    .attr("d", function(d, i, j) { return arc.innerRadius(cwidth*j)
-      	.outerRadius(cwidth * (j+1))(d); });
+		.attr("stroke", function() { return 'black'; })
+		.attr("title", function(d, i, j) { return i + '::' + j; })
+    .attr("d", function(d, i, j) {
+      	return arc
+          .innerRadius(cwidth * j)
+      		.outerRadius(cwidth * (j + 1))
+        	.startAngle(i * PI2 / d - (PI2 / (2 * d)))
+        	.endAngle((i + 1) * PI2 / d - (PI2 / (2 * d)))(); });
 
 
 </script>
