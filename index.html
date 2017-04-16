@@ -28,26 +28,29 @@ var width = 500,
 
 var data = []
 
+// each ring
 for (i = 0; i < pcount.length; i++){
-  for (j = 0; j < pcount[i]; j++){
-    
-    var sum = scale.slice(0, j).reduce((a, b) => a + b, 0);
-    var angle = PI2 / pcount[i]
-		var id = j == 0 ? 1: counter[j - 1] + i + 1;
+  // each direction inside the ring
+  var count = pcount[i]
+  // scale for ring depth
+  var sum = scale.slice(0, i).reduce((a, b) => a + b, 0);
+  var angle = PI2 / count
+
+  
+  for (j = 0; j < count; j++){
+		var id = i == 0 ? 1: counter[i - 1] + j + 1;
   
     // initiate data for each patch
     data.push({'id': id, 'value':0,
-               'startAngle': (i - 0.5) * angle - HPI,
-               'endAngle': (i + 0.5) * angle - HPI,
+               'startAngle': (j - 0.5) * angle - HPI,
+               'endAngle': (j + 0.5) * angle - HPI,
                'innerRadius': cwidth * sum,
-               'outerRadius': cwidth * (j + 1)})
+               'outerRadius': cwidth * (i + 1)})
   }
 }
 
-alert(data);
-
 var color = d3.scale.linear()
-			.domain([0, 1])
+			.domain([0, 24])
       .interpolate(d3.interpolateHcl)
       .range(['#d53e4f', '#f46d43', '#fdae61', '#fee08b', '#e6f598', '#abdda4', '#66c2a5', '#3288bd']);
   
@@ -63,20 +66,17 @@ var gs = svg.selectAll("g").data(pcount).enter().append("g");
 
 // TODO: Add lable to each path
 var path = gs.selectAll("path")
-    .data(function(d) {return Array(d).fill(PI2 / d); })
+    .data(data)
   .enter().append("path")
-    .attr("fill", function(d, i) { return color(i); })
+    .attr("fill", function(d, i) { return color(d.id); })
 		.attr("stroke", function() { return 'black'; })
-    .attr("d", function(d, i, j) {
-      	var sum = scale.slice(0, j).reduce((a, b) => a + b, 0);
+    .attr("d", function(d) {
       	return arc
-          .innerRadius(cwidth * sum)
-      		.outerRadius(cwidth * (j + 1))
-        	.startAngle((i - 0.5) * d - HPI)
-        	.endAngle((i + 0.5) * d - HPI)(); })
+          .innerRadius(d.innerRadius)
+      		.outerRadius(d.outerRadius)
+        	.startAngle(d.startAngle)
+        	.endAngle(d.endAngle)(); })
 	.append("svg:title")		
-		.text(function(d, i, j) { 
-      return j == 0 ? 1: counter[j - 1] + i + 1; });
-
+		.text(function(d) { return d.id; });
 
 </script>
