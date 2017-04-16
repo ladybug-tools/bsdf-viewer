@@ -20,23 +20,31 @@ var pcount = [1, 8, 16, 20, 24, 24, 24, 16, 12],
     counter = [1, 9, 25, 45, 69, 93, 117, 133, 145],
     scale = [0.5, 1, 1, 1, 1, 1, 1, 1, 2];
 
-var data = []
-
-for (i = 0; i < pcount.length; i++){
-  for (j = 0; j < pcount[i]; j++){
-    // initiate data for each patch
-    data.push({'id': 0, 'value':0, 'startAngle': 0,
-               'endAngle': 0, 'innerRadius': 0,
-               'outerRadius': 0})
-  }
-}
-	
-
 var width = 500,
     height = 500,
     cwidth = 25,
     PI2 = 2 * Math.PI
 		HPI = Math.PI / 2;
+
+var data = []
+
+for (i = 0; i < pcount.length; i++){
+  for (j = 0; j < pcount[i]; j++){
+    
+    var sum = scale.slice(0, j).reduce((a, b) => a + b, 0);
+    var angle = PI2 / pcount[i]
+		var id = j == 0 ? 1: counter[j - 1] + i + 1;
+  
+    // initiate data for each patch
+    data.push({'id': id, 'value':0,
+               'startAngle': (i - 0.5) * angle - HPI,
+               'endAngle': (i + 0.5) * angle - HPI,
+               'innerRadius': cwidth * sum,
+               'outerRadius': cwidth * (j + 1)})
+  }
+}
+
+alert(data);
 
 var color = d3.scale.linear()
 			.domain([0, 1])
