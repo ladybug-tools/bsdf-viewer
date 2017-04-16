@@ -21,10 +21,11 @@ var pcount = [1, 8, 16, 20, 24, 24, 24, 16, 12],
     scale = [0.5, 1, 1, 1, 1, 1, 1, 1, 2];
 
 var data = []
-for (i; i < pcount.length; i++){
-  for (j; j < pcount[i]; j++){
+
+for (i = 0; i < pcount.length; i++){
+  for (j = 0; j < pcount[i]; j++){
     // initiate data for each patch
-    data.push({'id': 0, 'value':0, 'startAngle': 0
+    data.push({'id': 0, 'value':0, 'startAngle': 0,
                'endAngle': 0, 'innerRadius': 0,
                'outerRadius': 0})
   }
