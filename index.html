@@ -2,13 +2,9 @@
 <meta charset="utf-8">
 <style>
 
-.arc text {
+text {
   font: 10px sans-serif;
   text-anchor: middle;
-}
-
-.arc path {
-  stroke: #fff;
 }
 
 </style>
@@ -55,6 +51,8 @@ var color = d3.scale.linear()
       .range(['#d53e4f', '#f46d43', '#fdae61', '#fee08b', '#e6f598', '#abdda4', '#66c2a5', '#3288bd']);
   
 var arc = d3.svg.arc();
+  
+var label = d3.svg.arc();
 
 var svg = d3.select("body").append("svg")
     .attr("width", width)
@@ -62,13 +60,13 @@ var svg = d3.select("body").append("svg")
     .append("g")
     .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
 
-var gs = svg.selectAll("g").data(pcount).enter().append("g");
-
-// TODO: Add lable to each path
-var path = gs.selectAll("path")
+var ring = svg.selectAll(".ring")
     .data(data)
-  .enter().append("path")
-    .attr("fill", function(d, i) { return color(d.id); })
+    .enter().append("g")
+      .attr("class", "ring");
+
+ring.append("path")
+    .attr("fill", function(d) { return color(d.id); })
 		.attr("stroke", function() { return 'black'; })
     .attr("d", function(d) {
       	return arc
@@ -76,7 +74,12 @@ var path = gs.selectAll("path")
       		.outerRadius(d.outerRadius)
         	.startAngle(d.startAngle)
         	.endAngle(d.endAngle)(); })
-	.append("svg:title")		
+
+ring.append("svg:title")		
 		.text(function(d) { return d.id; });
 
+ring.append("text")
+      .attr("transform", function(d) { return "translate(" + label.centroid(d) + ")"; })
+      .attr("dy", "0.35em")
+      .text(function(d) { return d.id; });
 </script>
