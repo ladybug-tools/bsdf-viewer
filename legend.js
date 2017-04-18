@@ -41,7 +41,7 @@ var legendWidth = 300;
 //Color Legend container
 var legendsvg = svg.append("g")
 	.attr("class", "legendWrapper")
-	.attr("transform", "translate(480, 540)");
+	.attr("transform", "translate(480, 470)");
 
 //Draw the Rectangle
 legendsvg.append("rect")
