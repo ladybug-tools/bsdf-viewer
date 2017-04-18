@@ -21,7 +21,7 @@ for(var i = 0; i < numStops; i++) {
 	transmitPoint.push(i * transmitRange[2] / (numStops - 1) + transmitRange[0]);
 }
 
-svg = d3.select("body").select("svg");
+svg = d3.select("#viewer").select("svg");
 
 //Create the gradient
 svg.append("defs")
@@ -41,7 +41,7 @@ var legendWidth = 300;
 //Color Legend container
 var legendsvg = svg.append("g")
 	.attr("class", "legendWrapper")
-	.attr("transform", "translate(" + width / 2 + ", 470)");
+	.attr("transform", "translate(" + chwidth / 2 + ", 470)");
 
 //Draw the Rectangle
 legendsvg.append("rect")
