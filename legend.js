@@ -1,7 +1,7 @@
 // generate cont. legend.
 // modified from http://bl.ocks.org/nbremer/a43dbd5690ccd5ac4c6cc392415140e7
 
-var color = d3.scaleLinear()
+var colorScale = d3.scaleLinear()
 	.domain([0, 50, 100])
 	.range(["#2c7bb6", "#ffff8c", "#d7191c"])
 	.interpolate(d3.interpolateHcl);
@@ -33,7 +33,7 @@ svg.append("defs")
 	.data(d3.range(numStops))                
 	.enter().append("stop") 
 	.attr("offset", function(d,i) { return transmitScale( transmitPoint[i] ) / 100; })   
-	.attr("stop-color", function(d,i) { return color( transmitPoint[i] ); });
+	.attr("stop-color", function(d,i) { return colorScale( transmitPoint[i] ); });
 
 // draw legend
 var legendWidth = 300;
@@ -41,7 +41,7 @@ var legendWidth = 300;
 //Color Legend container
 var legendsvg = svg.append("g")
 	.attr("class", "legendWrapper")
-	.attr("transform", "translate(480, 470)");
+	.attr("transform", "translate(" + width / 2 + ", 470)");
 
 //Draw the Rectangle
 legendsvg.append("rect")
