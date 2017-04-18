@@ -9,7 +9,7 @@ text {
 
 </style>
 <body></body>
-<script src="https://d3js.org/d3.v3.min.js"></script>
+<script src="https://d3js.org/d3.v4.min.js"></script>
 <script>
 
 var pcount = [1, 8, 16, 20, 24, 24, 24, 16, 12],
@@ -82,4 +82,5 @@ ring.append("text")
       .attr("transform", function(d) { return "translate(" + label.centroid(d) + ")"; })
       .attr("dy", "0.35em")
       .text(function(d) { return d.id; });
+ 
 </script>
