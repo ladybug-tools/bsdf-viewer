@@ -7,9 +7,28 @@ text {
   text-anchor: middle;
 }
 
+#wrapper {
+    width: 900px;
+    border: 1px solid black;
+    overflow: hidden; /* will contain if #first is longer than #second */
+}
+  
+#controlPanel {
+    width: 400px;
+    float:left; /* add this */
+    border: 1px solid red;
+}
+  
+#viewer {
+    border: 1px solid green;
+    overflow: hidden; /* if you don't want #second to wrap below #first */
+}
 </style>
 <body>
-  <div id="controlPanel"> </div>
+<div id="wrapper">
+    <div id="controlPanel"></div>
+    <div id="viewer"></div>
+</div>
 </body>
 <script src="https://d3js.org/d3.v4.min.js"></script>
 <script>
@@ -59,7 +78,7 @@ var arc = d3.arc();
   
 var label = d3.arc();
 
-var svg = d3.select("body").append("svg")
+var svg = d3.select("body").select("viewer").append("svg")
     .attr("width", width)
     .attr("height", height)
     .append("g")
@@ -99,8 +118,5 @@ ring.append("text")
       .attr("dy", "0.35em")
       .text(function(d) { return d.id; });
 
- 
-  d3.select('div#controlPanel').append('Button');
-  d3.select('div#controlPanel').append('Select');
 </script>
 <script src="legend.js"></script>
