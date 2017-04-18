@@ -3,31 +3,36 @@
 <style>
 
 text {
-  font: 9px sans-serif;
+  font-family: Roboto, sans-serif;
+  font-size: 9px;
   text-anchor: middle;
 }
 
 #wrapper {
     width: 900px;
   	height: 600px;
-    overflow: hidden; /* will contain if #first is longer than #second */
+    overflow: hidden;
 }
   
 #controlPanel {
     width: 300px;
   	height: 500px;
-    float:left; /* add this */
+    float:left;
     border: 1px solid black;
 }
   
 #viewer {
   	height: 500px;
-    overflow: hidden; /* if you don't want #second to wrap below #first */
+    overflow: hidden;
 }
 </style>
 <body>
 <div id="wrapper">
-    <div id="controlPanel"></div>
+    <div id="controlPanel">
+      <div id="vtitle" style="font-size: 20px">BSDF Viewer</div>
+      <div id="load"></div>
+      <div id="direction"></div>
+  	</div>
     <div id="viewer"></div>
 </div>
 </body>
