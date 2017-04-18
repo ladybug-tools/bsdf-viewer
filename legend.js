@@ -1,6 +1,11 @@
 // generate cont. legend.
 // modified from http://bl.ocks.org/nbremer/a43dbd5690ccd5ac4c6cc392415140e7
 
+var color = d3.scaleLinear()
+	.domain([0, 50, 100])
+	.range(["#2c7bb6", "#ffff8c", "#d7191c"])
+	.interpolate(d3.interpolateHcl);
+
 //Extra scale since the color scale is interpolated
 var transmitScale = d3.scaleLinear()
 	.domain([0, 100])
