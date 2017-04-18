@@ -21,6 +21,8 @@ for(var i = 0; i < numStops; i++) {
 	transmitPoint.push(i * transmitRange[2] / (numStops - 1) + transmitRange[0]);
 }
 
+svg = d3.select("body").select("svg");
+
 //Create the gradient
 svg.append("defs")
 	.append("linearGradient")
