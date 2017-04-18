@@ -8,7 +8,9 @@ text {
 }
 
 </style>
-<body></body>
+<body>
+  <div id="controlPanel"> </div>
+</body>
 <script src="https://d3js.org/d3.v4.min.js"></script>
 <script>
 
@@ -16,8 +18,8 @@ var pcount = [1, 8, 16, 20, 24, 24, 24, 16, 12],
     counter = [1, 9, 25, 45, 69, 93, 117, 133, 145],
     scale = [0.5, 1, 1, 1, 1, 1, 1, 1, 2];
 
-var width = 500,
-    height = 500,
+var width = 960,
+    height = 600,
     cwidth = 25,
     PI2 = 2 * Math.PI
 		HPI = Math.PI / 2;
@@ -37,7 +39,7 @@ for (i = 0; i < pcount.length; i++){
 		var id = i == 0 ? 1: counter[i - 1] + j + 1;
   
     // initiate data for each patch
-    data.push({'id': id, 'value':0,
+    data.push({'id': id, 'value': Math.random(0, 1),
                'startAngle': (j - 0.5) * angle - HPI,
                'endAngle': (j + 0.5) * angle - HPI,
                'innerRadius': cwidth * sum,
@@ -45,14 +47,16 @@ for (i = 0; i < pcount.length; i++){
   }
 }
 
-var color = d3.scale.linear()
-			.domain([0, 24])
-      .interpolate(d3.interpolateHcl)
-      .range(['#d53e4f', '#f46d43', '#fdae61', '#fee08b', '#e6f598', '#abdda4', '#66c2a5', '#3288bd']);
   
-var arc = d3.svg.arc();
+//Base the color scale on trans / reflectance values
+var color = d3.scaleLinear()
+	.domain([0, 0.5, 1])
+	.range(["#2c7bb6", "#ffff8c", "#d7191c"])
+	.interpolate(d3.interpolateHcl);
   
-var label = d3.svg.arc();
+var arc = d3.arc();
+  
+var label = d3.arc();
 
 var svg = d3.select("body").append("svg")
     .attr("width", width)
@@ -66,7 +70,7 @@ var ring = svg.selectAll(".ring")
       .attr("class", "ring");
 
 ring.append("path")
-    .attr("fill", function(d) { return color(d.id); })
+    .attr("fill", function(d) { return color(d.value); })
 		.attr("stroke", function() { return 'black'; })
     .attr("d", function(d) {
       	return arc
@@ -82,5 +86,7 @@ ring.append("text")
       .attr("transform", function(d) { return "translate(" + label.centroid(d) + ")"; })
       .attr("dy", "0.35em")
       .text(function(d) { return d.id; });
- 
+
+  d3.select('div#controlPanel').append('Button');
+  d3.select('div#controlPanel').append('Select');
 </script>
