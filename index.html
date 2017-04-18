@@ -3,7 +3,7 @@
 <style>
 
 text {
-  font: 10px sans-serif;
+  font: 9px sans-serif;
   text-anchor: middle;
 }
 
@@ -82,15 +82,16 @@ ring.append("path")
       		.outerRadius(d.outerRadius)
         	.startAngle(d.startAngle)
         	.endAngle(d.endAngle)(); })
-		.on('dblclick', function(){
+		.on('click', function(){
   			d3.selectAll(".patch").attr("stroke-width", 1);
-  			var p = d3.select(this)
+  			var p = d3.select(this);
+  			p.data.selected = true;
         p.attr("stroke-width", 3);
   			selectedPatch = p.id;
 		});
 
 ring.append("svg:title")		
-		.text(function(d) { return d.id; });
+		.text(function(d) { return d.value; });
 
 ring.append("text")
       .attr("transform", function(d) { 
