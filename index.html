@@ -53,7 +53,9 @@ text {
       height = 500,
       cwidth = 22.5,
       PI2 = 2 * Math.PI
-      HPI = Math.PI / 2;
+      HPI = Math.PI / 2,
+      selectedPatch = 0;
+			selectedDirection = 1;
 
 // initiate page
 function init_page(parsed_data){
@@ -75,7 +77,8 @@ function init_page(parsed_data){
       var id = i == 0 ? 1: counter[i - 1] + j + 1;
       // initiate data for each patch
       data.push({'id': id, 'selected': selected,
-                 'value': parsed_data[0].data[0][id - 1],
+                 'values': parsed_data.map(function(d){ return d.data[id - 1] }),
+                 'value': parsed_data[selectedDirection].data[selectedPatch][id - 1],
                  'startAngle': (j - 0.5) * angle - HPI,
                  'endAngle': (j + 0.5) * angle - HPI,
                  'innerRadius': cwidth * sum,
