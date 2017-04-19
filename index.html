@@ -40,6 +40,7 @@ text {
 <script src="https://d3js.org/d3.v4.min.js"></script>
 <script src="loadbsdf.js"></script>
 <script src="legend.js"></script>
+<script src="add_direction_select.js"></script>
 
 <script>
 
@@ -62,10 +63,10 @@ var color = d3.scaleLinear()
   .domain([0, 0.0005, 1])
   .range(["#2c7bb6", "#ffff8c", "#d7191c"])
   .interpolate(d3.interpolateHcl);
+
 // initiate page
 function init_page(parsed_data){
-	
-  draw_legend(chwidth);
+
   var directions = parsed_data.map(function(d){ return d.direction; });
   var data = []
 
@@ -119,7 +120,7 @@ function init_page(parsed_data){
             .outerRadius(d.outerRadius)
             .startAngle(d.startAngle)
             .endAngle(d.endAngle)(); })
-      .on('click', update_graph);
+      .on('click', update_graph_on_click);
 
   ring.append("svg:title")
   		.attr("class", "patchtitle")
@@ -127,12 +128,20 @@ function init_page(parsed_data){
 
   ring.append("text")
         .attr("transform", function(d) { 
-          return d.id == 1 ? "translate(0,0)" : "translate(" + label.centroid(d) + ")";})
+          return d.id == 1 ? "translate(0,0)" : "translate(" + 			
+  
+  label.centroid(d) + ")";})
         .attr("dy", "0.35em")
+  			.attr("fill", "black")
+  			.attr("stroke", "white")
+  			.attr("stroke-width", 0.3)
         .text(function(d) { return d.id; });
+  
+  draw_legend(chwidth);
+  add_directions_dropdown();
 }
 
-function update_graph(){
+function update_graph_on_click(){
   var p = d3.select(this);
   var data = p.data()[0];
   d3.selectAll(".patch")

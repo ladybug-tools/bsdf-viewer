@@ -2,13 +2,13 @@
 // modified from http://bl.ocks.org/nbremer/a43dbd5690ccd5ac4c6cc392415140e7
 function draw_legend(chwidth){
   var colorScale = d3.scaleLinear()
-    .domain([0, 50, 100])
+    .domain([0, 0.05, 1])
     .range(["#2c7bb6", "#ffff8c", "#d7191c"])
     .interpolate(d3.interpolateHcl);
 
   //Extra scale since the color scale is interpolated
   var transmitScale = d3.scaleLinear()
-    .domain([0, 100])
+    .domain([0, 0.05, 100])
     .range([0, 100]);
 
   //Calculate the variables for the transmit gradient
@@ -64,7 +64,7 @@ function draw_legend(chwidth){
   //Set scale for x-axis
   var xScale = d3.scaleLinear()
      .range([-legendWidth / 2, legendWidth / 2])
-     .domain([0, 100] );
+     .domain([0, 0.0005] );
 
   legendsvg.append("g")
     .attr("class", "axis axis--x")
