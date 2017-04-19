@@ -59,7 +59,7 @@ text {
 
 //Base the color scale on trans / reflectance values
 var color = d3.scaleLinear()
-  .domain([0, 0.0005, 0.001])
+  .domain([0, 0.0005, 1])
   .range(["#2c7bb6", "#ffff8c", "#d7191c"])
   .interpolate(d3.interpolateHcl);
 // initiate page
@@ -121,7 +121,8 @@ function init_page(parsed_data){
             .endAngle(d.endAngle)(); })
       .on('click', update_graph);
 
-  ring.append("svg:title")		
+  ring.append("svg:title")
+  		.attr("class", "patchtitle")
       .text(function(d) { return d.value; });
 
   ring.append("text")
@@ -133,13 +134,17 @@ function init_page(parsed_data){
 
 function update_graph(){
   var p = d3.select(this);
+  var data = p.data()[0];
   d3.selectAll(".patch")
   	.attr("stroke-width", 1)
     .attr("fill", function(d) {
     	d.selected = false;
-    	d.value = d.values[0][p.id - 1];
-    	return color(d.value); })
-  p.data.selected = true;
+    	d.value = d.values[selectedDirection][data.id - 1];
+    	return color(d.value); });
+  
+  d3.selectAll(".patchtitle").text(function(d) { return d.value; });
+  
+  data.selected = true;
   p.attr("stroke-width", 3);
 }
   
