@@ -30,6 +30,7 @@ text {
 <div id="wrapper">
     <div id="controlPanel">
     <div id="vtitle" style="font-size: 20px">BSDF Viewer</div>
+    <br>
     <input type="file" id="fileinput" style="width:200px;"> </input>
     <div id="filename"></div>
     <br>
@@ -64,6 +65,9 @@ var color = d3.scaleLinear()
   .domain([0, 0.0005, 1])
   .range(["#2c7bb6", "#ffff8c", "#d7191c"])
   .interpolate(d3.interpolateHcl);
+
+// assign readXMLfile to browse file
+document.getElementById('fileinput').onchange = function(evt) {readXMLFile(evt.target.files[0]);};
 
 // initiate page
 function init_page(parsed_data){
@@ -168,7 +172,16 @@ function update_graph_direction(){
   d3.selectAll(".patchtitle").text(function(d) { return d.value; });
 }
   
+function update_on_new_file(parsed_data){
+	d3.selectAll(".patch")
+    .attr("fill", function(d) {
+			d.values = parsed_data.map(function(d){ return d.data[id - 1] });   
+    	d.value = d.values[selectedDirection][selectedPatch - 1];
+    	return color(d.value); });
   
+  d3.selectAll(".patchtitle").text(function(d) { return d.value; });
+} 
+
 // load default bsdf
 var bsdf_path = "cl_Tn0.06_blinds.xml";
 load_xml_file(bsdf_path, init_page);
