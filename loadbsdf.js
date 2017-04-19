@@ -59,6 +59,6 @@ function readXMLFile(file) {
 		r.readAsText(f);
     
 	} else { 
-      alert("Failed to load file");
+      alert("Failed to load file!");
     }
 };

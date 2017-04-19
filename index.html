@@ -174,12 +174,13 @@ function update_graph_direction(){
   
 function update_on_new_file(parsed_data){
 	d3.selectAll(".patch")
-    .attr("fill", function(d) {
-			d.values = parsed_data.map(function(d){ return d.data[id - 1] });   
+    .attr("fill", function(d, i) {
+			d.values = parsed_data.map(function(d){ return d.data[i] });   
     	d.value = d.values[selectedDirection][selectedPatch - 1];
     	return color(d.value); });
   
   d3.selectAll(".patchtitle").text(function(d) { return d.value; });
+  d3.select("div #filename").text('');
 } 
 
 // load default bsdf
