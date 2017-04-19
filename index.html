@@ -55,7 +55,7 @@ text {
       cwidth = 22.5,
       PI2 = 2 * Math.PI
       HPI = Math.PI / 2,
-      selectedPatch = 0;
+      selectedPatch = 1;
 			selectedDirection = 0;
 
 //Base the color scale on trans / reflectance values
@@ -84,7 +84,7 @@ function init_page(parsed_data){
       // initiate data for each patch
       data.push({'id': id, 'selected': selected,
                  'values': parsed_data.map(function(d){ return d.data[id - 1] }),
-                 'value': parsed_data[selectedDirection].data[selectedPatch][id - 1],
+                 'value': parsed_data[selectedDirection].data[selectedPatch - 1][id - 1],
                  'startAngle': (j - 0.5) * angle - HPI,
                  'endAngle': (j + 0.5) * angle - HPI,
                  'innerRadius': cwidth * sum,
