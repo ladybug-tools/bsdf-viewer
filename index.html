@@ -57,6 +57,11 @@ text {
       selectedPatch = 0;
 			selectedDirection = 1;
 
+//Base the color scale on trans / reflectance values
+var color = d3.scaleLinear()
+  .domain([0, 0.0005, 0.001])
+  .range(["#2c7bb6", "#ffff8c", "#d7191c"])
+  .interpolate(d3.interpolateHcl);
 // initiate page
 function init_page(parsed_data){
 	
@@ -87,12 +92,6 @@ function init_page(parsed_data){
   }
 
 
-  //Base the color scale on trans / reflectance values
-  var color = d3.scaleLinear()
-    .domain([0, 0.0005, 0.001])
-    .range(["#2c7bb6", "#ffff8c", "#d7191c"])
-    .interpolate(d3.interpolateHcl);
-
   var arc = d3.arc();
 
   var label = d3.arc();
@@ -120,13 +119,7 @@ function init_page(parsed_data){
             .outerRadius(d.outerRadius)
             .startAngle(d.startAngle)
             .endAngle(d.endAngle)(); })
-      .on('click', function(){
-          d3.selectAll(".patch").attr("stroke-width", 1);
-          var p = d3.select(this);
-          p.data.selected = true;
-          p.attr("stroke-width", 3);
-          selectedPatch = p.id;
-      });
+      .on('click', update_graph);
 
   ring.append("svg:title")		
       .text(function(d) { return d.value; });
@@ -138,6 +131,18 @@ function init_page(parsed_data){
         .text(function(d) { return d.id; });
 }
 
+function update_graph(){
+  var p = d3.select(this);
+  d3.selectAll(".patch")
+  	.attr("stroke-width", 1)
+    .attr("fill", function(d) {
+    	d.selected = false;
+    	var v = d.values[p.id - 1]
+    	return color(d.value); })
+  p.data.selected = true;
+  p.attr("stroke-width", 3);
+}
+  
 // load default bsdf
 var bsdf_path = "https://raw.githubusercontent.com/ladybug-tools/honeybee-resources/master/daylight/bsdf/cl_Tn0.06_blinds.xml";
 load_xml_file(bsdf_path, init_page);
