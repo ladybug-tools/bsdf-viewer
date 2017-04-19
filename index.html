@@ -26,6 +26,7 @@ text {
     overflow: hidden;
 }
 </style>
+
 <body>
 <div id="wrapper">
     <div id="controlPanel">
@@ -37,6 +38,11 @@ text {
 </div>
 </body>
 <script src="https://d3js.org/d3.v4.min.js"></script>
+<script>
+// load default bsdf file
+var bsdf_path = "https://raw.githubusercontent.com/ladybug-tools/honeybee-resources/master/daylight/bsdf/cl_Tn0.06_blinds.xml";
+</script>
+
 <script>
 
 var pcount = [1, 8, 16, 20, 24, 24, 24, 16, 12],
@@ -127,3 +133,4 @@ ring.append("text")
 
 </script>
 <script src="legend.js"></script>
+<script src="loadbsdf.js"></script>
