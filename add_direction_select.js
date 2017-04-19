@@ -14,11 +14,14 @@ function add_directions_dropdown(directions) {
     
   	// add change event to update the values and colors
     select.on("change", function(d) {
-      index = d3.select(this).property("value");
-//       // update the value in other dropdown menu
-//       d3.selectAll("select option").filter(function(d) {
-//         return d == sortBy;
-//       }).attr("selected", "true");
-//       updateImageGrid(graph.brushed(), false);
-//     });
+      
+      selectedDirection = parseInt(d3.select(this).property("value"));
+
+      // update the value in other dropdown menu
+      d3.selectAll("select option").filter(function(d, i) {
+        return i == selectedDirection;
+      }).attr("selected", "true");
+      update_graph_direction();
+
+     });
 }
