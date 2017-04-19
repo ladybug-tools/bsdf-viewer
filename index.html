@@ -32,6 +32,7 @@ text {
     <div id="controlPanel">
       <div id="vtitle" style="font-size: 20px">BSDF Viewer</div>
       <div id="load"></div>
+      <br>
       <div id="direction"></div>
   	</div>
     <div id="viewer"></div>
@@ -56,7 +57,7 @@ text {
       PI2 = 2 * Math.PI
       HPI = Math.PI / 2,
       selectedPatch = 0;
-			selectedDirection = 1;
+			selectedDirection = 0;
 
 //Base the color scale on trans / reflectance values
 var color = d3.scaleLinear()
@@ -138,7 +139,7 @@ function init_page(parsed_data){
         .text(function(d) { return d.id; });
   
   draw_legend();
-  add_directions_dropdown();
+  add_directions_dropdown(directions);
 }
 
 function update_graph_on_click(){
@@ -152,10 +153,20 @@ function update_graph_on_click(){
     	return color(d.value); });
   
   d3.selectAll(".patchtitle").text(function(d) { return d.value; });
-  
+  selectedPatch = data.id;
   data.selected = true;
   p.attr("stroke-width", 3);
 }
+
+function update_graph_direction(){
+  d3.selectAll(".patch")
+    .attr("fill", function(d) {
+    	d.value = d.values[selectedDirection][selectedPatch - 1];
+    	return color(d.value); });
+  
+  d3.selectAll(".patchtitle").text(function(d) { return d.value; });
+}
+  
   
 // load default bsdf
 var bsdf_path = "https://raw.githubusercontent.com/ladybug-tools/honeybee-resources/master/daylight/bsdf/cl_Tn0.06_blinds.xml";
