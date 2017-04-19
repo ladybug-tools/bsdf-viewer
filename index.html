@@ -175,7 +175,8 @@ function update_graph_direction(){
 function update_on_new_file(parsed_data){
 	d3.selectAll(".patch")
     .attr("fill", function(d) {
-			d.values = parsed_data.map(function(d){ return d.data[d.id - 1]; });   
+      var id = d.id;
+			d.values = parsed_data.map(function(pd){ return pd.data[id - 1]; });   
     	d.value = d.values[selectedDirection][selectedPatch - 1];
     	return color(d.value); });
   
