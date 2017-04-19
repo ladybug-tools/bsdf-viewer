@@ -88,7 +88,7 @@ function init_page(parsed_data){
       var id = i == 0 ? 1: counter[i - 1] + j + 1;
       // initiate data for each patch
       data.push({'id': id, 'selected': selected,
-                 'values': parsed_data.map(function(d){ return d.data[id - 1] }),
+                 'values': parsed_data.map(function(d){ return d.data.map(function(el){return el[id - 1];})}),
                  'value': parsed_data[selectedDirection].data[selectedPatch - 1][id - 1],
                  'startAngle': (j - 0.5) * angle - HPI,
                  'endAngle': (j + 0.5) * angle - HPI,
@@ -173,11 +173,15 @@ function update_graph_direction(){
 }
   
 function update_on_new_file(parsed_data){
-	d3.selectAll(".patch")
+	// update data
+  d3.selectAll(".patch").data().forEach(
+    function(da){
+      da.values = parsed_data.map(function(d){
+        return d.data.map(function(el){return el[da.id - 1];})});;});
+  
+  d3.selectAll(".patch")
     .attr("fill", function(d) {
-      var id = d.id;
-			d.values = parsed_data.map(function(pd){ return pd.data[id - 1]; });   
-    	d.value = d.values[selectedDirection][selectedPatch - 1];
+    	d.value = d.values[selectedDirection][d.id - 1];
     	return color(d.value); });
   
   d3.selectAll(".patchtitle").text(function(d) { return d.value; });
