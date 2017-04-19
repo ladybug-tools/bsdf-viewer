@@ -181,7 +181,7 @@ function update_on_new_file(parsed_data){
   
   d3.selectAll(".patch")
     .attr("fill", function(d) {
-    	d.value = d.values[selectedDirection][d.id - 1];
+    	d.value = d.values[selectedDirection][selectedPatch - 1];
     	return color(d.value); });
   
   d3.selectAll(".patchtitle").text(function(d) { return d.value; });
