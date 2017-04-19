@@ -42,99 +42,99 @@ text {
 
 <script>
 // load default bsdf file
-function expose(parsed_data){
+function init_page(parsed_data){
 	parsed_data = parsed_data;
-}
+	directions = parsed_data.map(function(d){ return d.direction; });
  
-var bsdf_path = "https://raw.githubusercontent.com/ladybug-tools/honeybee-resources/master/daylight/bsdf/cl_Tn0.06_blinds.xml";
+  var pcount = [1, 8, 16, 20, 24, 24, 24, 16, 12],
+      counter = [1, 9, 25, 45, 69, 93, 117, 133, 145],
+      scale = [0.5, 1, 1, 1, 1, 1, 1, 1],
+      radius = [0.5, 1, 1, 1, 1, 1, 1, 1, 2];
 
-load_xml_file(bsdf_path, expose);
+  var width = 960,
+      chwidth = 600,
+      height = 500,
+      cwidth = 22.5,
+      PI2 = 2 * Math.PI
+      HPI = Math.PI / 2;
 
-var pcount = [1, 8, 16, 20, 24, 24, 24, 16, 12],
-    counter = [1, 9, 25, 45, 69, 93, 117, 133, 145],
-    scale = [0.5, 1, 1, 1, 1, 1, 1, 1],
-    radius = [0.5, 1, 1, 1, 1, 1, 1, 1, 2];
-		
-var width = 960,
-    chwidth = 600,
-    height = 500,
-    cwidth = 22.5,
-    PI2 = 2 * Math.PI
-		HPI = Math.PI / 2;
+  var data = []
 
-var data = []
+  // each ring
+  for (i = 0; i < pcount.length; i++){
+    // each direction inside the ring
+    var count = pcount[i]
+    // scale for ring depth
+    var sum = scale.slice(0, i).reduce((a, b) => a + b, 0);
+    var angle = PI2 / count;
+    var selected = i == 0 ? true : false;  
 
-// each ring
-for (i = 0; i < pcount.length; i++){
-  // each direction inside the ring
-  var count = pcount[i]
-  // scale for ring depth
-  var sum = scale.slice(0, i).reduce((a, b) => a + b, 0);
-  var angle = PI2 / count;
-  var selected = i == 0 ? true : false;  
-  
-  for (j = 0; j < count; j++){
-		var id = i == 0 ? 1: counter[i - 1] + j + 1;
-    // initiate data for each patch
-    data.push({'id': id, 'selected': selected,
-               'value': Math.random(0, 1),
-               'startAngle': (j - 0.5) * angle - HPI,
-               'endAngle': (j + 0.5) * angle - HPI,
-               'innerRadius': cwidth * sum,
-               'outerRadius': cwidth * (sum + radius[i])})
+    for (j = 0; j < count; j++){
+      var id = i == 0 ? 1: counter[i - 1] + j + 1;
+      // initiate data for each patch
+      data.push({'id': id, 'selected': selected,
+                 'value': Math.random(0, 1),
+                 'startAngle': (j - 0.5) * angle - HPI,
+                 'endAngle': (j + 0.5) * angle - HPI,
+                 'innerRadius': cwidth * sum,
+                 'outerRadius': cwidth * (sum + radius[i])})
+    }
   }
+
+
+  //Base the color scale on trans / reflectance values
+  var color = d3.scaleLinear()
+    .domain([0, 0.5, 1])
+    .range(["#2c7bb6", "#ffff8c", "#d7191c"])
+    .interpolate(d3.interpolateHcl);
+
+  var arc = d3.arc();
+
+  var label = d3.arc();
+
+  var svg = d3.select("body").select("#viewer").append("svg")
+      .attr("width", width)
+      .attr("height", height)
+      .append("g")
+      .attr("transform", "translate(" + chwidth / 2 + "," + ((height / 2) - 30) + ")");
+
+  var ring = svg.selectAll(".ring")
+      .data(data)
+      .enter().append("g")
+        .attr("class", "ring")
+        .style("cursor", "pointer");
+
+  ring.append("path")
+      .attr("class", "patch")
+      .attr("fill", function(d) { return color(d.value); })
+      .attr("stroke", 'black')
+      .attr("stroke-width", function(d) { return d.selected ? 3 : 1; })  
+      .attr("d", function(d) {
+          return arc
+            .innerRadius(d.innerRadius)
+            .outerRadius(d.outerRadius)
+            .startAngle(d.startAngle)
+            .endAngle(d.endAngle)(); })
+      .on('click', function(){
+          d3.selectAll(".patch").attr("stroke-width", 1);
+          var p = d3.select(this);
+          p.data.selected = true;
+          p.attr("stroke-width", 3);
+          selectedPatch = p.id;
+      });
+
+  ring.append("svg:title")		
+      .text(function(d) { return d.value; });
+
+  ring.append("text")
+        .attr("transform", function(d) { 
+          return d.id == 1 ? "translate(0,0)" : "translate(" + label.centroid(d) + ")";})
+        .attr("dy", "0.35em")
+        .text(function(d) { return d.id; });
 }
 
-  
-//Base the color scale on trans / reflectance values
-var color = d3.scaleLinear()
-	.domain([0, 0.5, 1])
-	.range(["#2c7bb6", "#ffff8c", "#d7191c"])
-	.interpolate(d3.interpolateHcl);
-  
-var arc = d3.arc();
-  
-var label = d3.arc();
-
-var svg = d3.select("body").select("#viewer").append("svg")
-    .attr("width", width)
-    .attr("height", height)
-    .append("g")
-    .attr("transform", "translate(" + chwidth / 2 + "," + ((height / 2) - 30) + ")");
-
-var ring = svg.selectAll(".ring")
-    .data(data)
-    .enter().append("g")
-      .attr("class", "ring")
-			.style("cursor", "pointer");
-
-ring.append("path")
-		.attr("class", "patch")
-    .attr("fill", function(d) { return color(d.value); })
-		.attr("stroke", 'black')
-  	.attr("stroke-width", function(d) { return d.selected ? 3 : 1; })  
-  	.attr("d", function(d) {
-      	return arc
-          .innerRadius(d.innerRadius)
-      		.outerRadius(d.outerRadius)
-        	.startAngle(d.startAngle)
-        	.endAngle(d.endAngle)(); })
-		.on('click', function(){
-  			d3.selectAll(".patch").attr("stroke-width", 1);
-  			var p = d3.select(this);
-  			p.data.selected = true;
-        p.attr("stroke-width", 3);
-  			selectedPatch = p.id;
-		});
-
-ring.append("svg:title")		
-		.text(function(d) { return d.value; });
-
-ring.append("text")
-      .attr("transform", function(d) { 
-  			return d.id == 1 ? "translate(0,0)" : "translate(" + label.centroid(d) + ")";})
-      .attr("dy", "0.35em")
-      .text(function(d) { return d.id; });
-
+// load default bsdf
+var bsdf_path = "https://raw.githubusercontent.com/ladybug-tools/honeybee-resources/master/daylight/bsdf/cl_Tn0.06_blinds.xml";
+load_xml_file(bsdf_path, init_page);
 </script>
 <script src="legend.js"></script>
