@@ -137,7 +137,7 @@ function update_graph(){
   	.attr("stroke-width", 1)
     .attr("fill", function(d) {
     	d.selected = false;
-    	var v = d.values[p.id - 1]
+    	d.value = d.values[0][p.id - 1];
     	return color(d.value); })
   p.data.selected = true;
   p.attr("stroke-width", 3);
