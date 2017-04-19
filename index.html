@@ -42,9 +42,13 @@ text {
 
 <script>
 // load default bsdf file
+function expose(parsed_data){
+	parsed_data = parsed_data;
+}
+ 
 var bsdf_path = "https://raw.githubusercontent.com/ladybug-tools/honeybee-resources/master/daylight/bsdf/cl_Tn0.06_blinds.xml";
 
-load_xml_file(bsdf_path);
+load_xml_file(bsdf_path, expose);
 
 var pcount = [1, 8, 16, 20, 24, 24, 24, 16, 12],
     counter = [1, 9, 25, 45, 69, 93, 117, 133, 145],
