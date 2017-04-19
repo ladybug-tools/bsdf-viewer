@@ -39,6 +39,7 @@ text {
 </body>
 <script src="https://d3js.org/d3.v4.min.js"></script>
 <script src="loadbsdf.js"></script>
+<script src="legend.js"></script>
 
 <script>
 
@@ -56,8 +57,9 @@ text {
 
 // initiate page
 function init_page(parsed_data){
-
-  directions = parsed_data.map(function(d){ return d.direction; });
+	
+  draw_legend(chwidth);
+  var directions = parsed_data.map(function(d){ return d.direction; });
   var data = []
 
   // each ring
@@ -73,7 +75,7 @@ function init_page(parsed_data){
       var id = i == 0 ? 1: counter[i - 1] + j + 1;
       // initiate data for each patch
       data.push({'id': id, 'selected': selected,
-                 'value': Math.random(0, 1),
+                 'value': parsed_data[0].data[0][id - 1],
                  'startAngle': (j - 0.5) * angle - HPI,
                  'endAngle': (j + 0.5) * angle - HPI,
                  'innerRadius': cwidth * sum,
@@ -84,8 +86,8 @@ function init_page(parsed_data){
 
   //Base the color scale on trans / reflectance values
   var color = d3.scaleLinear()
-    .domain([0, 0.5, 1])
-    .range(["#2c7bb6", "#ffff8c", "#d7191c"])
+    .domain(d3.extent([0, 0.0005, 0.001]))
+    .range(["#2c7bb6", "#d7191c"])
     .interpolate(d3.interpolateHcl);
 
   var arc = d3.arc();
@@ -137,4 +139,3 @@ function init_page(parsed_data){
 var bsdf_path = "https://raw.githubusercontent.com/ladybug-tools/honeybee-resources/master/daylight/bsdf/cl_Tn0.06_blinds.xml";
 load_xml_file(bsdf_path, init_page);
 </script>
-<script src="legend.js"></script>
