@@ -1,6 +1,6 @@
 // generate cont. legend.
 // modified from http://bl.ocks.org/nbremer/a43dbd5690ccd5ac4c6cc392415140e7
-function draw_legend(chwidth){
+function draw_legend(){
   var colorScale = d3.scaleLinear()
     .domain([0, 0.05, 1])
     .range(["#2c7bb6", "#ffff8c", "#d7191c"])

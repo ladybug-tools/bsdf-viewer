@@ -4,13 +4,13 @@ function add_directions_dropdown() {
     .text("Change the direction: ")
     .append("select")
   
-  // add options based on input and outputs
+  // add options based on directions
   select.selectAll("option")
       .data(directions)
       .enter()
       .append("option")
-      .attr("value", function(d, i){ return i; })
-      .text(function(d) { return d;});
+      .attr("value", function(d, i){ return d.replace(" ", "_"); })
+      .text(function(d) { return d.replace(" ", "_");});
     
   	// add change event to resort images
 //     select.on("change", function(d) {
