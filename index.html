@@ -86,8 +86,8 @@ function init_page(parsed_data){
 
   //Base the color scale on trans / reflectance values
   var color = d3.scaleLinear()
-    .domain(d3.extent([0, 0.0005, 0.001]))
-    .range(["#2c7bb6", "#d7191c"])
+    .domain([0, 0.0005, 0.001])
+    .range(["#2c7bb6", "#ffff8c", "#d7191c"])
     .interpolate(d3.interpolateHcl);
 
   var arc = d3.arc();
