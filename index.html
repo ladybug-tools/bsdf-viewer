@@ -55,6 +55,7 @@ text {
 
   var pcount = [1, 8, 16, 20, 24, 24, 24, 16, 12],
       counter = [1, 9, 25, 45, 69, 93, 117, 133, 145],
+      counter_rev = [145, 133, 117, 93, 69, 45, 25, 9, 1],
       scale = [0.5, 1, 1, 1, 1, 1, 1, 1],
       radius = [0.5, 1, 1, 1, 1, 1, 1, 1, 2];
 
@@ -78,7 +79,7 @@ document.getElementById('fileinput').onchange = function(evt) {readXMLFile(evt.t
 // initiate page
 function init_page(parsed_data){
 
-  var directions = parsed_data.map(function(d){ return d.direction; });
+  directions = parsed_data.map(function(d){ return d.direction; });
   var data = []
 
   // each ring
@@ -94,8 +95,8 @@ function init_page(parsed_data){
       var id = i == 0 ? 1: counter[i - 1] + j + 1;
       // initiate data for each patch
       data.push({'id': id, 'selected': selected,
-                 'values': parsed_data.map(function(d){ return d.data.map(function(el){return el[id - 1];})}),
-                 'value': parsed_data[selectedDirection].data[selectedPatch - 1][id - 1],
+                 'values': parsed_data.map(function(d){ return d.data.map(function(el){return el[getIdByDirection(id) - 1];})}),
+                 'value': parsed_data[selectedDirection].data[selectedPatch - 1][getIdByDirection(id) - 1],
                  'startAngle': (j - 0.5) * angle - HPI,
                  'endAngle': (j + 0.5) * angle - HPI,
                  'innerRadius': cwidth * sum,
@@ -138,21 +139,49 @@ function init_page(parsed_data){
       .text(function(d) { return d.value; });
 
   ring.append("text")
+  			.attr("class", "patch_id")
         .attr("transform", function(d) { 
           return d.id == 1 ? "translate(0,0)" : "translate(" + 			
   
   label.centroid(d) + ")";})
         .attr("dy", "0.35em")
   			.attr("fill", "black")
-  			//.attr("stroke", "white")
-  			//.attr("stroke-width", 0.3)
-        .text(function(d) { return d.id; });
+        .text(function(d) { return getIdByDirection(d.id); });
   
   draw_legend();
   d3.select("div #filename").text(bsdf_path).style("color", "gray");
   add_directions_dropdown(directions);
 }
 
+// calculate ring number from patch front id
+function ringNumber(frontId){
+    if (frontId == 1) return 0;
+  	for (var i = 0; i < counter_rev.length; i++){
+        var v = counter_rev[i];
+      	if (frontId > v) return 9 - i;
+		}
+}
+
+//get backId of the patch from the front value
+function backId(frontId){
+    if (frontId == 1){ return 1; }
+    var rn = ringNumber(frontId)  // ring number
+    var n = pcount[rn]  // number of patches in this ring
+    var i = frontId - (counter[rn - 1] + 1)  // number of this patch in this ring
+    var a = 2 * Math.PI / n
+    var offset = 2 * Math.min(Math.abs(i - (n / 4)), Math.abs(i - 3 * (n / 4)))
+    if (Math.tan(i * a) < 0){ offset *= -1; }
+    return frontId + offset
+}
+
+function getIdByDirection(frontId){
+  if (isDirectionFront()) return frontId;
+  return backId(frontId);
+}
+
+function isDirectionFront(){
+  return directions[selectedDirection].endsWith('Front');
+}
 function update_graph_on_click(){
   var p = d3.select(this);
   var data = p.data()[0];
@@ -176,6 +205,7 @@ function update_graph_direction(){
     	return color(d.value); });
   
   d3.selectAll(".patchtitle").text(function(d) { return d.value; });
+  d3.selectAll("text .patch_id").text(function(d) { return getIdByDirection(d.id); });
 }
   
 function update_on_new_file(parsed_data){
@@ -188,7 +218,11 @@ function update_on_new_file(parsed_data){
   d3.selectAll(".patch").data().forEach(
     function(da){
       da.values = parsed_data.map(function(d){
-        return d.data.map(function(el){return el[da.id - 1];})});;});
+        return d.data.map(
+          function(el){return el[getIdByDirection(da.id) - 1];}
+        )});
+    }
+  );
   
   d3.selectAll(".patch")
     .attr("fill", function(d) {
@@ -197,7 +231,7 @@ function update_on_new_file(parsed_data){
   
   d3.selectAll(".patchtitle").text(function(d) { return d.value; });
   d3.select("div #filename").text('');
-} 
+}
 
 // load default bsdf
 var bsdf_path = "cl_Tn0.06_blinds.xml";
