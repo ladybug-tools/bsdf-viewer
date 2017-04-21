@@ -16,13 +16,12 @@ function add_directions_dropdown(directions) {
     select.on("change", function(d) {
       
       selectedDirection = parseInt(d3.select(this).property("value"));
-
-      // update the value in other dropdown menu
-      d3.selectAll("select option").filter(function(d, i) {
-        return i == selectedDirection;
-      }).attr("selected", "true");
       update_graph_direction();
      });
+
+	d3.selectAll("select option")
+  	.filter(function(d, i){return i == selectedDirection;})
+  		.attr("selected", "true");
 
   update_graph_direction();
 }

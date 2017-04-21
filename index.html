@@ -43,8 +43,7 @@ text {
       <p> Hover on each patch to see the values. Click on each patch to updated the values based on the new angle of incident.</p>
       <p>Report bugs and suggestions to (mostapha@ladybug.tools)</p>
       <p style="color: red"> Known bug: 1. The legend needs to be fixed.</p>
-      <p style="color: red"> 2. select doesn't update to the selected option when loading a new file.</p>
-      <p style="color: red"> 3. Numbers mapping shold be double checked. The id and hence the values for the same patch is different based on direction.</p>
+      <p style="color: red"> 2. Numbers mapping shold be double checked. The id and hence the values for the same patch is different based on direction.</p>
   	</div>
   	</div>
     <div id="viewer"></div>
@@ -86,12 +85,12 @@ document.getElementById('fileinput').onchange = function(evt) {readXMLFile(evt.t
 function init_page(parsed_data){
 
   directions = parsed_data.map(function(d){ return d.direction; });
-  var data = []
+  var data = [];
 
   // each ring
   for (i = 0; i < pcount.length; i++){
     // each direction inside the ring
-    var count = pcount[i]
+    var count = pcount[i];
     // scale for ring depth
     var sum = scale.slice(0, i).reduce((a, b) => a + b, 0);
     var angle = PI2 / count;
@@ -163,7 +162,7 @@ function init_page(parsed_data){
 
 // update patch data in control panel
 function updateCPText(value){
-  d3.select("div #selectedpatch").text("Incident Patch: " + selectedPatch);
+  d3.select("div #selectedpatch").text("Incident Patch: " + getIdByDirection(selectedPatch));
   d3.select("div #patchvalue").text(value);
   
 }
@@ -233,7 +232,6 @@ function update_on_new_file(parsed_data){
   directions = parsed_data.map(function(d){ return d.direction; });
   selectedDirection = selectedDirection % directions.length;
   add_directions_dropdown(directions);
-  d3.select("div #selecteddir").text(directions[selectedDirection]);
   
 	// update data
   d3.selectAll(".patch").data().forEach(
