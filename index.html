@@ -68,10 +68,9 @@ text {
 			selectedDirection = 0;
 
 //Base the color scale on trans / reflectance values
-var color = d3.scaleLinear()
-  .domain([0, 0.0005, 1])
-  .range(["#2c7bb6", "#ffff8c", "#d7191c"])
-  .interpolate(d3.interpolateHcl);
+var color = d3.scaleLog()
+  .domain([0.00000001, 0.5, 100])
+  .range(["#2c7bb6", "#ffff8c", "#d7191c"]);
 
 // assign readXMLfile to browse file
 document.getElementById('fileinput').onchange = function(evt) {readXMLFile(evt.target.files[0]);};

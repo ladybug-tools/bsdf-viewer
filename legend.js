@@ -1,14 +1,13 @@
 // generate cont. legend.
 // modified from http://bl.ocks.org/nbremer/a43dbd5690ccd5ac4c6cc392415140e7
 function draw_legend(){
-  var colorScale = d3.scaleLinear()
-    .domain([0, 0.05, 1])
-    .range(["#2c7bb6", "#ffff8c", "#d7191c"])
-    .interpolate(d3.interpolateHcl);
+  var colorScale = d3.scaleLog()
+  .domain([0.00000001, 0.5, 100])
+    .range(["#2c7bb6", "#ffff8c", "#d7191c"]);
 
   //Extra scale since the color scale is interpolated
-  var transmitScale = d3.scaleLinear()
-    .domain([0, 0.05, 100])
+  var transmitScale = d3.scaleLog()
+    .domain([0.00000001, 0.5, 100])
     .range([0, 100]);
 
   //Calculate the variables for the transmit gradient
@@ -33,10 +32,10 @@ function draw_legend(){
     .data(d3.range(numStops))                
     .enter().append("stop") 
     .attr("offset", function(d,i) { return transmitScale( transmitPoint[i] ) / 100; })   
-    .attr("stop-color", function(d,i) { return colorScale( transmitPoint[i] ); });
+    .attr("stop-color", function(d,i) { return colorScale( transmitPoint[i] * 100 ); });
 
   // draw legend
-  var legendWidth = 300;
+  var legendWidth = 500;
 
   //Color Legend container
   var legendsvg = svg.append("g")
@@ -50,7 +49,7 @@ function draw_legend(){
     .attr("y", 0)
     //.attr("rx", 8/2)
     .attr("width", legendWidth)
-    .attr("height", 12)
+    .attr("height", 16)
     .style("fill", "url(#legend)");
 
   //Append title
@@ -62,12 +61,13 @@ function draw_legend(){
     .text("% of Incident Flux Existing Patch");
 
   //Set scale for x-axis
-  var xScale = d3.scaleLinear()
+  var xScale = d3.scaleLog()
      .range([-legendWidth / 2, legendWidth / 2])
-     .domain([0, 0.0005] );
+     .domain([0.00000001, 100]);
 
   legendsvg.append("g")
     .attr("class", "axis axis--x")
+  .attr("transform", "translate(0, 8)")
     .call(
       d3.axisTop(xScale)
       .ticks(5)
