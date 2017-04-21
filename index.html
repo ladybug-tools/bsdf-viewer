@@ -205,7 +205,7 @@ function update_graph_direction(){
     	return color(d.value); });
   
   d3.selectAll(".patchtitle").text(function(d) { return d.value; });
-  d3.selectAll("text .patch_id").text(function(d) { return getIdByDirection(d.id); });
+  d3.selectAll("text.patch_id").text(function(d) { return getIdByDirection(d.id); });
 }
   
 function update_on_new_file(parsed_data){
@@ -222,7 +222,7 @@ function update_on_new_file(parsed_data){
           function(el){return el[getIdByDirection(da.id) - 1];}
         )});
     }
-  );
+  ); 
   
   d3.selectAll(".patch")
     .attr("fill", function(d) {
