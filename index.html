@@ -210,7 +210,7 @@ function update_graph_direction(){
   
 function update_on_new_file(parsed_data){
   
-  var directions = parsed_data.map(function(d){ return d.direction; });
+  directions = parsed_data.map(function(d){ return d.direction; });
   selectedDirection = selectedDirection % directions.length;
   add_directions_dropdown(directions);
   
