@@ -1,7 +1,7 @@
 function add_directions_dropdown(directions) {
     
   var select = d3.select("#direction")
-    .text("Change the direction: ")
+    .text("Pick wavelength and direction: ")
     .append("select")
   
   // add options based on directions
@@ -22,6 +22,7 @@ function add_directions_dropdown(directions) {
         return i == selectedDirection;
       }).attr("selected", "true");
       update_graph_direction();
-
      });
+
+  update_graph_direction();
 }

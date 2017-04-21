@@ -35,12 +35,16 @@ text {
     <div id="filename"></div>
     <br>
     <div id="direction"></div>
-    <br>
+  	<div id="selecteddir"></div>  
+  	<div id="selectedpatch"></div>  
+  	<div id="patchvalue"></div>  
   	<hr>
     <div id="info"  style="color: gray">
       <p> Hover on each patch to see the values. Click on each patch to updated the values based on the new angle of incident.</p>
       <p>Report bugs and suggestions to (mostapha@ladybug.tools)</p>
-      <p style="color: red"> Known bug: The legend needs to be fixed.</p>
+      <p style="color: red"> Known bug: 1. The legend needs to be fixed.</p>
+      <p style="color: red"> 2. select doesn't update to the selected option when loading a new file.</p>
+      <p style="color: red"> 3. Numbers mapping shold be double checked. The id and hence the values for the same patch is different based on direction.</p>
   	</div>
   	</div>
     <div id="viewer"></div>
@@ -151,6 +155,8 @@ function init_page(parsed_data){
   draw_legend();
   d3.select("div #filename").text(bsdf_path).style("color", "gray");
   add_directions_dropdown(directions);
+  // add data as text
+  d3.select("div #selectedpatch").text("Incident Patch: " + selectedPatch);
 }
 
 // calculate ring number from patch front id
@@ -182,20 +188,22 @@ function getIdByDirection(frontId){
 function isDirectionFront(){
   return directions[selectedDirection].endsWith('Front');
 }
+
 function update_graph_on_click(){
   var p = d3.select(this);
   var data = p.data()[0];
+  selectedPatch = getIdByDirection(data.id);
   d3.selectAll(".patch")
   	.attr("stroke-width", 1)
     .attr("fill", function(d) {
     	d.selected = false;
-    	d.value = d.values[selectedDirection][data.id - 1];
+    	d.value = d.values[selectedDirection][selectedPatch - 1];
     	return color(d.value); });
   
   d3.selectAll(".patchtitle").text(function(d) { return d.value; });
-  selectedPatch = data.id;
   data.selected = true;
   p.attr("stroke-width", 3);
+  d3.select("div #selectedpatch").text("Incident Patch: " + selectedPatch);
 }
 
 function update_graph_direction(){
@@ -213,6 +221,7 @@ function update_on_new_file(parsed_data){
   directions = parsed_data.map(function(d){ return d.direction; });
   selectedDirection = selectedDirection % directions.length;
   add_directions_dropdown(directions);
+  d3.select("div #selecteddir").text(directions[selectedDirection]);
   
 	// update data
   d3.selectAll(".patch").data().forEach(
