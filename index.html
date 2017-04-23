@@ -1,9 +1,12 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
+<!-- Google Font -->
+	<link href='http://fonts.googleapis.com/css?family=Open+Sans:300,400' rel='stylesheet' type='text/css'>
+
 <style>
 
 text {
-  font-family: Roboto, sans-serif;
+  font-family: 'Open Sans', sans-serif;
   font-size: 9px;
   text-anchor: middle;
 }
@@ -36,6 +39,7 @@ text {
     <br>
     <div id="direction"></div>
   	<div id="selecteddir"></div>  
+    <br>
   	<div id="selectedpatch"></div>  
   	<div id="patchvalue"></div>  
   	<hr>
@@ -162,8 +166,8 @@ function init_page(parsed_data){
 
 // update patch data in control panel
 function updateCPText(value){
-  d3.select("div #selectedpatch").text("Incident Patch: " + selectedPatch);
-  d3.select("div #patchvalue").text(value);
+  d3.select("div #selectedpatch").text(
+    "Incident Patch: " + selectedPatch + " || Value: " + value + "%");
 }
   
 // calculate ring number from patch front id
