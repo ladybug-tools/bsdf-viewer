@@ -68,7 +68,7 @@ text {
       cwidth = 22.5,
       PI2 = 2 * Math.PI
       HPI = Math.PI / 2,
-      selectedPatch = 1;
+      selectedPatch = 1, // this is not the id but the correct id which is selected
 			selectedDirection = 0;
 
 //Base the color scale on trans / reflectance values
@@ -162,9 +162,8 @@ function init_page(parsed_data){
 
 // update patch data in control panel
 function updateCPText(value){
-  d3.select("div #selectedpatch").text("Incident Patch: " + getIdByDirection(selectedPatch));
+  d3.select("div #selectedpatch").text("Incident Patch: " + selectedPatch);
   d3.select("div #patchvalue").text(value);
-  
 }
   
 // calculate ring number from patch front id
