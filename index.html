@@ -226,7 +226,7 @@ function update_graph_on_click(){
 }
 
 function update_on_new_file(parsed_data){
-  
+  var v = null;
   directions = parsed_data.map(function(d){ return d.direction; });
   selectedDirection = selectedDirection % directions.length;
   add_directions_dropdown(directions);
@@ -234,9 +234,10 @@ function update_on_new_file(parsed_data){
 	// update data
   d3.selectAll(".patch").data().forEach(
     function(da){
-      da.values = parsed_data.map(function(d){
+      da.values = parsed_data.map(function(d, i){
+        var dirc = directions[i];
         return d.data.map(
-          function(el){return el[getIdByDirection(da.id) - 1];}
+          function(el){return el[getIdByDirection(da.id, dirc) - 1];}
         )});
     }
   ); 
@@ -244,15 +245,16 @@ function update_on_new_file(parsed_data){
   d3.selectAll(".patch")
     .attr("fill", function(d) {
     	d.value = d.values[selectedDirection][selectedPatch - 1];
+    	if (getIdByDirection(d.id) == selectedPatch) v = d.value;
     	return color(d.value); });
   
   d3.selectAll(".patchtitle").text(function(d) { return d.value; });
   d3.select("div #filename").text('');
-  updateCPText(0) // this should be fixed
+  updateCPText(v); // this should be fixed
 }
 
 // load default bsdf
-var bsdf_path = "SingleClear.xml";
-// var bsdf_path = "cl_Tn0.06_blinds.xml";
+// var bsdf_path = "SingleClear.xml";
+var bsdf_path = "cl_Tn0.06_blinds.xml";
 load_xml_file(bsdf_path, init_page);
 </script>
