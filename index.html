@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 <!-- Google Font -->
-	<link href='http://fonts.googleapis.com/css?family=Open+Sans:300,400' rel='stylesheet' type='text/css'>
+	<link href='https://fonts.googleapis.com/css?family=Open+Sans:300,400' rel='stylesheet' type='text/css'>
 
 <style>
 
@@ -38,8 +38,8 @@ text {
     <div id="filename"></div>
     <br>
     <div id="direction"></div>
-  	<div id="selecteddir"></div>  
     <br>
+  	<div id="selecteddir"></div>  
   	<div id="selectedpatch"></div>  
   	<div id="patchvalue"></div>  
   	<hr>
@@ -103,13 +103,16 @@ function init_page(parsed_data){
     for (j = 0; j < count; j++){
       var id = i == 0 ? 1: counter[i - 1] + j + 1;
       // initiate data for each patch
-      data.push({'id': id, 'selected': selected,
-                 'values': parsed_data.map(function(d){ return d.data.map(function(el){return el[getIdByDirection(id) - 1];})}),
-                 'value': parsed_data[selectedDirection].data[selectedPatch - 1][getIdByDirection(id) - 1],
-                 'startAngle': (j - 0.5) * angle - HPI,
-                 'endAngle': (j + 0.5) * angle - HPI,
-                 'innerRadius': cwidth * sum,
-                 'outerRadius': cwidth * (sum + radius[i])})
+      data.push(
+        {'id': id, 'selected': selected,
+         'values': parsed_data.map(function(d){
+          	return d.data.map(function(el){return el[id - 1];})
+         }),
+         'value': parsed_data[selectedDirection].data[selectedPatch - 1][id - 1],
+         'startAngle': (j - 0.5) * angle - HPI,
+         'endAngle': (j + 0.5) * angle - HPI,
+         'innerRadius': cwidth * sum,
+         'outerRadius': cwidth * (sum + radius[i])})
     }
   }
 
@@ -166,6 +169,7 @@ function init_page(parsed_data){
 
 // update patch data in control panel
 function updateCPText(value){
+  d3.select("div #selecteddir").text(directions[selectedDirection]);
   d3.select("div #selectedpatch").text(
     "Incident Patch: " + selectedPatch + " || Value: " + value + "%");
 }
@@ -217,19 +221,6 @@ function update_graph_on_click(){
   updateCPText(data.value);
 }
 
-function update_graph_direction(){
-  d3.selectAll(".patch")
-    .attr("fill", function(d) {
-    	d.value = d.values[selectedDirection][selectedPatch - 1];
-    	return color(d.value); });
-  
-  d3.selectAll(".patchtitle").text(function(d) { return d.value; });
-  d3.selectAll("text.patch_id").text(function(d) { return getIdByDirection(d.id); });
-  
-  updateCPText(0) // this should be fixed
-
-}
-  
 function update_on_new_file(parsed_data){
   
   directions = parsed_data.map(function(d){ return d.direction; });
@@ -257,6 +248,6 @@ function update_on_new_file(parsed_data){
 }
 
 // load default bsdf
-var bsdf_path = "cl_Tn0.06_blinds.xml";
+var bsdf_path = "SingleClear.xml"; //"cl_Tn0.06_blinds.xml";
 load_xml_file(bsdf_path, init_page);
 </script>

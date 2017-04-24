@@ -25,3 +25,18 @@ function add_directions_dropdown(directions) {
 
   update_graph_direction();
 }
+
+function update_graph_direction(){
+  d3.selectAll(".patch")
+    .attr("fill", function(d) {
+    	d.value = d.values[selectedDirection][selectedPatch - 1];
+    	return color(d.value); })
+  	.attr("stroke-width", function(d) {
+    		return getIdByDirection(d.id) == selectedPatch ? 3 : 1;
+  	});
+  
+  d3.selectAll(".patchtitle").text(function(d) { return d.value; });
+  d3.selectAll("text.patch_id").text(function(d) { return getIdByDirection(d.id); });
+  
+  updateCPText(0) // this should be fixed
+}
