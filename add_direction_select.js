@@ -13,8 +13,7 @@ function add_directions_dropdown(directions) {
       .text(function(d) { return d;});
     
   	// add change event to update the values and colors
-    select.on("change", function(d) {
-      
+    select.on("change", function(d) {    
       selectedDirection = parseInt(d3.select(this).property("value"));
       update_graph_direction();
      });
@@ -27,16 +26,24 @@ function add_directions_dropdown(directions) {
 }
 
 function update_graph_direction(){
+  var v = null;
   d3.selectAll(".patch")
     .attr("fill", function(d) {
     	d.value = d.values[selectedDirection][selectedPatch - 1];
     	return color(d.value); })
   	.attr("stroke-width", function(d) {
-    		return getIdByDirection(d.id) == selectedPatch ? 3 : 1;
+    		if (getIdByDirection(d.id) == selectedPatch){
+          v = d.value;
+          d.selected = true;
+          return 3;
+        } else{
+          d.selected = false;
+          return 1;
+        }
   	});
   
   d3.selectAll(".patchtitle").text(function(d) { return d.value; });
   d3.selectAll("text.patch_id").text(function(d) { return getIdByDirection(d.id); });
   
-  updateCPText(0) // this should be fixed
+  updateCPText(v);
 }

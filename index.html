@@ -104,9 +104,11 @@ function init_page(parsed_data){
       var id = i == 0 ? 1: counter[i - 1] + j + 1;
       // initiate data for each patch
       data.push(
-        {'id': id, 'selected': selected,
-         'values': parsed_data.map(function(d){
-          	return d.data.map(function(el){return el[id - 1];})
+        {'id': id,  // id of patches 1..145
+         'selected': selected,
+         'values': parsed_data.map(function(d, i){
+           	var dirc = directions[i];
+          	return d.data.map(function(el){return el[getIdByDirection(id, dirc) - 1];})
          }),
          'value': parsed_data[selectedDirection].data[selectedPatch - 1][id - 1],
          'startAngle': (j - 0.5) * angle - HPI,
@@ -167,6 +169,7 @@ function init_page(parsed_data){
   updateCPText(data[selectedPatch - 1].value);
 }
 
+
 // update patch data in control panel
 function updateCPText(value){
   d3.select("div #selecteddir").text(directions[selectedDirection]);
@@ -195,13 +198,14 @@ function backId(frontId){
     return frontId + offset
 }
 
-function getIdByDirection(frontId){
-  if (isDirectionFront()) return frontId;
+function getIdByDirection(frontId, dirc){
+  if (isDirectionFront(dirc)) return frontId;
   return backId(frontId);
 }
 
-function isDirectionFront(){
-  return directions[selectedDirection].endsWith('Front');
+function isDirectionFront(dirc){
+  var d = dirc || directions[selectedDirection];
+  return d.endsWith('Front');
 }
 
 function update_graph_on_click(){
@@ -248,6 +252,7 @@ function update_on_new_file(parsed_data){
 }
 
 // load default bsdf
-var bsdf_path = "SingleClear.xml"; //"cl_Tn0.06_blinds.xml";
+var bsdf_path = "SingleClear.xml";
+// var bsdf_path = "cl_Tn0.06_blinds.xml";
 load_xml_file(bsdf_path, init_page);
 </script>
