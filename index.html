@@ -77,7 +77,7 @@ text {
 
 //Base the color scale on trans / reflectance values
 var color = d3.scaleLog()
-  .domain([0.00000001, 0.5, 100])
+  .domain([0.00000001, 50, 100])
   .range(["#2c7bb6", "#ffff8c", "#d7191c"]);
 
 // assign readXMLfile to browse file
@@ -108,7 +108,7 @@ function init_page(parsed_data){
          'selected': selected,
          'values': parsed_data.map(function(d, i){
            	var dirc = directions[i];
-          	return d.data.map(function(el){return el[getIdByDirection(id, dirc) - 1];})
+          	return d.data.map(function(el){return +el[getIdByDirection(id, dirc) - 1];})
          }),
          'value': parsed_data[selectedDirection].data[selectedPatch - 1][id - 1],
          'startAngle': (j - 0.5) * angle - HPI,

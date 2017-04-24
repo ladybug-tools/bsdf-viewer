@@ -5,7 +5,7 @@ function draw_legend(){
   var legendWidth = 500;
   
   var colorScale = d3.scaleLog()
-  .domain([0.00000001, 0.5, 100])
+  .domain([0.00000001, 50, 100])
     .range(["#2c7bb6", "#ffff8c", "#d7191c"]);
 
   //Extra scale since the color scale is interpolated
@@ -35,7 +35,7 @@ function draw_legend(){
     .data(d3.range(numStops))                
     .enter().append("stop") 
     .attr("offset",
-					function(d,i) { return transmitScale( transmitPoint[i] ) / legendWidth; })   
+					function(d,i) { return transmitPoint[i] + "%"; })   
     .attr("stop-color",
           function(d,i) { return colorScale( transmitPoint[i]); });
 
@@ -65,15 +65,15 @@ function draw_legend(){
 
   //Set scale for x-axis
   var xScale = d3.scaleLog()
-     .range([-legendWidth / 2, legendWidth / 2])
-     .domain([0.00000001, 100]);
+     .range([-legendWidth / 2, 0, legendWidth / 2])
+     .domain([0.00000001, 50, 100]);
 
   legendsvg.append("g")
     .attr("class", "axis axis--x")
   .attr("transform", "translate(0, 8)")
     .call(
       d3.axisTop(xScale)
-      .ticks(8)
+      .ticks(6)
       .tickFormat(function(d) { return d + "%"; })
       );
 }
