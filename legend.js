@@ -1,17 +1,20 @@
 // generate cont. legend.
 // modified from http://bl.ocks.org/nbremer/a43dbd5690ccd5ac4c6cc392415140e7
 function draw_legend(){
+  
+  var legendWidth = 500;
+  
   var colorScale = d3.scaleLog()
   .domain([0.00000001, 0.5, 100])
     .range(["#2c7bb6", "#ffff8c", "#d7191c"]);
 
   //Extra scale since the color scale is interpolated
-  var transmitScale = d3.scaleLog()
-    .domain([0.00000001, 0.5, 100])
-    .range([0, 100]);
+  var transmitScale = d3.scaleLinear()
+    .domain([0, 100])
+    .range([0, legendWidth]);
 
   //Calculate the variables for the transmit gradient
-  var numStops = 10;
+  var numStops = 50;
   transmitRange = transmitScale.domain();
   transmitRange[2] = transmitRange[1] - transmitRange[0];
   transmitPoint = [];
@@ -31,12 +34,12 @@ function draw_legend(){
     .selectAll("stop") 
     .data(d3.range(numStops))                
     .enter().append("stop") 
-    .attr("offset", function(d,i) { return transmitScale( transmitPoint[i] ) / 100; })   
-    .attr("stop-color", function(d,i) { return colorScale( transmitPoint[i] * 100 ); });
+    .attr("offset",
+					function(d,i) { return transmitScale( transmitPoint[i] ) / legendWidth; })   
+    .attr("stop-color",
+          function(d,i) { return colorScale( transmitPoint[i]); });
 
   // draw legend
-  var legendWidth = 500;
-
   //Color Legend container
   var legendsvg = svg.append("g")
     .attr("class", "legendWrapper")
@@ -70,7 +73,7 @@ function draw_legend(){
   .attr("transform", "translate(0, 8)")
     .call(
       d3.axisTop(xScale)
-      .ticks(5)
+      .ticks(8)
       .tickFormat(function(d) { return d + "%"; })
       );
 }
