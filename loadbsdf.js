@@ -25,7 +25,7 @@ function parse_xml_data(data){
 			var wavelength = WavelengthData.querySelector("Wavelength").textContent; 
 			
 			var direction_type = block.querySelector("WavelengthDataDirection").textContent;
-			var rawdata = d3.csvParseRows(block.querySelector("ScatteringData").textContent.replace('\n', '')).slice(0, 145);
+			var rawdata = d3.tsvParseRows(block.querySelector("ScatteringData").textContent.replace('\n', '').replace(/,/g, " ")).slice(0, 145);
 			
 			return {
 				direction: wavelength + " " + direction_type,
