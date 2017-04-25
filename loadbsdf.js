@@ -18,14 +18,14 @@ function load_xml_text(xmlText, callback){
 function parse_xml_data(data){
 	
 	return [].map.call(data.querySelectorAll("WavelengthData"), function(WavelengthData) {
-
+    	var psv = d3.dsvFormat(' ');
 			var block = WavelengthData.querySelector("WavelengthDataBlock");
 			
 			block.querySelector("RowAngleBasis").textContent.endsWith("Klems Full") ? ' ' : alert('This viewer only works for Klems Full Angle Basis.');
 			var wavelength = WavelengthData.querySelector("Wavelength").textContent; 
 			
 			var direction_type = block.querySelector("WavelengthDataDirection").textContent;
-			var rawdata = d3.tsvParseRows(block.querySelector("ScatteringData").textContent.replace('\n', '').replace(/,/g, " ")).slice(0, 145);
+			var rawdata = psv.parse(block.querySelector("ScatteringData").textConten.replace(/,/g, ' ')).slice(0, 145);
 			
 			return {
 				direction: wavelength + " " + direction_type,
