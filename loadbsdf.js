@@ -33,7 +33,7 @@ function parse_xml_data(data){
 				cAngleBasis: block.querySelector("ColumnAngleBasis").textContent,
 				rAngleBasis: block.querySelector("RowAngleBasis").textContent,
 				scatteringDataType: block.querySelector("ScatteringDataType").textContent,
-				data: [].map.call(rawdata, function(d) { return d.map(Number).slice(1, 146); })
+				data: [].map.call(rawdata, function(d) { return d.filter(function(f){return f != "";}).map(Number); })
 			};
 		});
 }
