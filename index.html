@@ -40,8 +40,8 @@ text {
     <div id="direction"></div>
     <br>
   	<div id="selecteddir"></div>  
+  	<div id="totalvalue"></div>  
   	<div id="selectedpatch"></div>  
-  	<div id="patchvalue"></div>  
   	<hr>
     <div id="info"  style="color: gray">
       <p> How to use this viewer: </p>
@@ -176,6 +176,11 @@ function updateCPText(value){
   d3.select("div #selecteddir").text(directions[selectedDirection]);
   d3.select("div #selectedpatch").text(
     "Incident Patch: " + selectedPatch + " || Value: " + value + "%");
+  
+  var total = 0;
+  d3.selectAll(".patch").data().forEach(function(d){ total += d.value; };);
+  d3.select("div #selecteddir").text(directions[selectedDirection]);
+  d3.select("div #totalvalue").text("Total: " + total);
 }
   
 // calculate ring number from patch front id
@@ -255,8 +260,8 @@ function update_on_new_file(parsed_data){
 }
 
 // load default bsdf
-var bsdf_path = "SingleClear.xml";
-// var bsdf_path = "CS-TBK7-12_112916.xml";
+// var bsdf_path = "SingleClear.xml";
+var bsdf_path = "CS-TBK7-12_112916.xml";
 // var bsdf_path = "cl_Tn0.06_blinds.xml";
 load_xml_file(bsdf_path, init_page);
 </script>
