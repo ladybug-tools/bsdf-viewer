@@ -26,14 +26,14 @@ function parse_xml_data(data){
 			var wavelength = WavelengthData.querySelector("Wavelength").textContent; 
 			
 			var direction_type = block.querySelector("WavelengthDataDirection").textContent;
-			var rawdata = psv.parseRows(block.querySelector("ScatteringData").textContent.trim().replace(/,/g, ' ').replace(/  +/g, separator)).slice(0, 145);
+			rawdata = psv.parseRows(block.querySelector("ScatteringData").textContent.replace('\n', ' ').replace(/,/g, ' ').replace(/  +/g, separator)).slice(0, 145);
 			
 			return {
 				direction: wavelength + " " + direction_type,
 				cAngleBasis: block.querySelector("ColumnAngleBasis").textContent,
 				rAngleBasis: block.querySelector("RowAngleBasis").textContent,
 				scatteringDataType: block.querySelector("ScatteringDataType").textContent,
-				data: [].map.call(rawdata, function(d) { return d.map(Number).slice(0, 145); })
+				data: [].map.call(rawdata, function(d) { return d.map(Number).slice(1, 146); })
 			};
 		});
 }
