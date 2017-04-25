@@ -178,7 +178,7 @@ function updateCPText(value){
     "Incident Patch: " + selectedPatch + " || Value: " + value + "%");
   
   var total = 0;
-  d3.selectAll(".patch").data().forEach(function(d){ total += d.value; };);
+  d3.selectAll(".patch").data().forEach(function(d){ total += d.value; });
   d3.select("div #selecteddir").text(directions[selectedDirection]);
   d3.select("div #totalvalue").text("Total: " + total);
 }
