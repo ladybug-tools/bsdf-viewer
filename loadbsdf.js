@@ -25,7 +25,7 @@ function parse_xml_data(data){
 			var wavelength = WavelengthData.querySelector("Wavelength").textContent; 
 			
 			var direction_type = block.querySelector("WavelengthDataDirection").textContent;
-			var rawdata = psv.parse(block.querySelector("ScatteringData").textConten.replace(/,/g, ' ')).slice(0, 145);
+			var rawdata = psv.parse(block.querySelector("ScatteringData").textContent.replace(/,/g, ' ')).slice(0, 145);
 			
 			return {
 				direction: wavelength + " " + direction_type,
