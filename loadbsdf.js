@@ -3,7 +3,7 @@
 /*
 
 This conversion factor can be calculate on the fly but I just hard-coded them for now.
-So many thanks to David Geisler Moroder for providing the numbers and guidance for
+So many thanks to David Geisler-Moroder for providing the numbers and guidance for
 understanding XML files. 
 
 */
@@ -35,6 +35,14 @@ const c_factor = [
 	57.02153605
 ];
 
+function split_list(arr, n) {
+	var res = [];
+	while (arr.length) {
+	  res.push(arr.splice(0, n));
+	}
+	return res;
+  }
+
 function load_xml_file(xmlFile, callback){
 	d3.xml(xmlFile, function(error, data) {
 		if (error) throw error;
@@ -63,8 +71,11 @@ function parse_xml_data(data){
 			var wavelength = WavelengthData.querySelector("Wavelength").textContent; 
 			
 			var direction_type = block.querySelector("WavelengthDataDirection").textContent;
-			rawdata = psv.parseRows(block.querySelector("ScatteringData").textContent.replace('\n', ' ').replace(/,/g, ' ').replace(/  +/g, separator)).slice(0, 145);
-			
+			var rawdata = split_list(
+				block.querySelector("ScatteringData")
+				.textContent.split(/[\s,]+/)
+				.filter(function(f){return f != ''}),
+				145);
 			return {
 				direction: wavelength + " " + direction_type,
 				cAngleBasis: block.querySelector("ColumnAngleBasis").textContent,
