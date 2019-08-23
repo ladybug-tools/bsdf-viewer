@@ -9,7 +9,7 @@ function draw_legend(){
     .range(["#2c7bb6", "#ffff8c", "#d7191c"]);
 
   //Extra scale since the color scale is interpolated
-  var transmitScale = d3.scaleLinear()
+  var transmitScale = d3.scaleLog()
     .domain([0, 100])
     .range([0, legendWidth]);
 
@@ -43,7 +43,7 @@ function draw_legend(){
   //Color Legend container
   var legendsvg = svg.append("g")
     .attr("class", "legendWrapper")
-    .attr("transform", "translate(" + chwidth / 2 + ", 470)");
+    .attr("transform", "translate(" + chwidth / 1.5 + ", 470)");
 
   //Draw the Rectangle
   legendsvg.append("rect")

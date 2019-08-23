@@ -42,7 +42,12 @@ text {
   	<div id="selecteddir"></div>  
   	<div id="totalvalue"></div>  
   	<div id="selectedpatch"></div>  
-  	<hr>
+    <hr>
+    <div>Incident Hemisphere</div>
+    <div id="incident"></div>
+    <hr>
+    </div>
+    <div id="viewer"></div>
     <div id="info"  style="color: gray">
       <p> How to use this viewer: </p>
       <p>1. Click on each patch to update the values based on the new angle of incident.<br>2. Hover on each patch to see the values.</p>
@@ -50,8 +55,6 @@ text {
       <p>Report bugs and suggestions to (https://github.com/ladybug-tools/honeybee/issues)</p>
       <p style="color: red"></p>
   	</div>
-  	</div>
-    <div id="viewer"></div>
 </div>
 </body>
 <script src="https://d3js.org/d3.v4.min.js"></script>
@@ -61,11 +64,14 @@ text {
 
 <script>
 
-  var pcount = [1, 8, 16, 20, 24, 24, 24, 16, 12],
-      counter = [1, 9, 25, 45, 69, 93, 117, 133, 145],
-      counter_rev = [145, 133, 117, 93, 69, 45, 25, 9, 1],
-      scale = [0.5, 1, 1, 1, 1, 1, 1, 1],
-      radius = [0.5, 1, 1, 1, 1, 1, 1, 1, 2];
+  // TODO:
+  // fix legend range
+
+  var pcount = [1, 8, 16, 20, 24, 24, 24, 16, 12],           // number of patches
+      counter = [1, 9, 25, 45, 69, 93, 117, 133, 145],       // counter for each ring
+      counter_rev = [145, 133, 117, 93, 69, 45, 25, 9, 1],   // same but reversed 
+      scale = [0.5, 1, 1, 1, 1, 1, 1, 1],                    // not sure how I use this?
+      radius = [0.5, 1, 1, 1, 1, 1, 1, 1, 2];                // arc radius for each ring
 
   var width = 960,
       chwidth = 600,
@@ -73,7 +79,7 @@ text {
       cwidth = 22.5,
       PI2 = 2 * Math.PI
       HPI = Math.PI / 2,
-      selectedPatch = 1, // this is not the id but the correct id which is selected
+      selectedPatch = 1,      // this is not the id but the correct id which is selected
 			selectedDirection = 0;
 
 //Base the color scale on trans / reflectance values
@@ -90,7 +96,9 @@ document.getElementById('fileinput').onchange = function(evt) {readXMLFile(evt.t
 function init_page(parsed_data){
 
   directions = parsed_data.map(function(d){ return d.direction; });
-  var data = [];
+
+  var data = [], 
+    inp_data = [];
 
   // each ring
   for (i = 0; i < pcount.length; i++){
@@ -103,19 +111,33 @@ function init_page(parsed_data){
 
     for (j = 0; j < count; j++){
       var id = i == 0 ? 1: counter[i - 1] + j + 1;
-      // initiate data for each patch
+      // initiate data for each patch for exiting hemisphere
       data.push(
         {'id': id,  // id of patches 1..145
-         'selected': selected,
          'values': parsed_data.map(function(d, i){
            	var dirc = directions[i];
-          	return d.data.map(function(el){return +el[getIdByDirection(id, dirc) - 1];})
+          	return d.data.map(
+              function(el){
+                return +el[getIdByDirection(id, dirc) - 1];
+              })
          }),
          'value': parsed_data[selectedDirection].data[selectedPatch - 1][id - 1],
          'startAngle': (j - 0.5) * angle - HPI,
          'endAngle': (j + 0.5) * angle - HPI,
          'innerRadius': cwidth * sum,
-         'outerRadius': cwidth * (sum + radius[i])})
+         'outerRadius': cwidth * (sum + radius[i])
+         }
+      )
+
+      inp_data.push(
+        {'id': id,  // id of patches 1..145
+         'selected': selected,
+         'startAngle': (j + 0.5) * angle + HPI,
+         'endAngle': (j - 0.5) * angle + HPI,
+         'innerRadius': cwidth / 2 * sum,
+         'outerRadius': cwidth / 2 * (sum + radius[i])
+         }
+      )
     }
   }
 
@@ -128,17 +150,41 @@ function init_page(parsed_data){
       .attr("width", width)
       .attr("height", height)
       .append("g")
-      .attr("transform", "translate(" + chwidth / 2 + "," + ((height / 2) - 30) + ")");
+      .attr("transform", "translate(" + chwidth / 1.5 +  "," + ((height / 2) - 30) + ")");
+
+  var inp_svg =  d3.select("body").select("#incident").append("svg")
+      .attr("width", width / 2)
+      .attr("height", height/ 2)
+      .append("g")
+      .attr("transform", "translate(" + 200 + "," + ((height / 3) - 50) + ")");
 
   var ring = svg.selectAll(".ring")
       .data(data)
       .enter().append("g")
-        .attr("class", "ring")
+        .attr("class", "ring");
+        // .style("cursor", "pointer");   // add this back to show the number
+
+  var inp_ring = inp_svg.selectAll(".inp_ring")
+      .data(inp_data)
+      .enter().append("g")
+        .attr("class", "inp_ring")
         .style("cursor", "pointer");
 
   ring.append("path")
       .attr("class", "patch")
       .attr("fill", function(d) { return color(d.value); })
+      .attr("stroke", 'black')
+      .attr("stroke-width", 1)  
+      .attr("d", function(d) {
+          return arc
+            .innerRadius(d.innerRadius)
+            .outerRadius(d.outerRadius)
+            .startAngle(d.startAngle)
+            .endAngle(d.endAngle)(); });
+
+  inp_ring.append("path")
+      .attr("class", "inp_patch")
+      .attr("fill", function(d) { return d.selected ? 'yellow' : 'gray'; })
       .attr("stroke", 'black')
       .attr("stroke-width", function(d) { return d.selected ? 3 : 1; })  
       .attr("d", function(d) {
@@ -147,40 +193,53 @@ function init_page(parsed_data){
             .outerRadius(d.outerRadius)
             .startAngle(d.startAngle)
             .endAngle(d.endAngle)(); })
-      .on('click', update_graph_on_click);
+            .on('click', update_graph_on_click);
 
   ring.append("svg:title")
-  		.attr("class", "patchtitle")
-      .text(function(d) { return d.value; });
+    .attr("class", "patchtitle")
+    .text(function(d) { return d.value; });
 
   ring.append("text")
-  			.attr("class", "patch_id")
-        .attr("transform", function(d) { 
-          return d.id == 1 ? "translate(0,0)" : "translate(" + 			
+    .attr("class", "patch_id")
+    .attr("transform", function(d) { 
+      return d.id == 1 ? "translate(0,0)" : "translate(" + label.centroid(d) + ")";
+    })
+    .attr("dy", "0.35em")
+    .attr("fill", "black")
+    .text(function(d) { return getIdByDirection(d.id); });
   
-  label.centroid(d) + ")";})
-        .attr("dy", "0.35em")
-  			.attr("fill", "black")
-        .text(function(d) { return getIdByDirection(d.id); });
-  
+
+  inp_ring.append("svg:title")
+    .attr("class", "inp_patchtitle")
+    .text(function(d) { return d.id; });
+
+  // inp_ring.append("text")
+  //   .attr("class", "inp_patch_id")
+  //   .attr("transform", function(d) { 
+  //     return d.id == 1 ? "translate(0,0)" : "translate(" + label.centroid(d) + ")";
+  //   })
+  //   .attr("dy", "0.35em")
+  //   .attr("fill", "black")
+  //   .text(function(d) { return getIdByDirection(d.id); });
+
   draw_legend();
+
   d3.select("div #filename").text(bsdf_path).style("color", "gray");
+
   add_directions_dropdown(directions);
+
   // add data as text
-  updateCPText(data[selectedPatch - 1].value);
+  updateCPText();
 }
 
 
 // update patch data in control panel
-function updateCPText(value){
-  d3.select("div #selecteddir").text(directions[selectedDirection]);
-  d3.select("div #selectedpatch").text(
-    "Incident Patch: " + selectedPatch + " || Value: " + value + "%");
-  
+function updateCPText(){
   var total = 0;
   d3.selectAll(".patch").data().forEach(function(d){ total += d.value; });
   d3.select("div #selecteddir").text(directions[selectedDirection]);
-  d3.select("div #totalvalue").text("Total: " + total);
+  var info = "Incident Patch: " + selectedPatch + "    |   Direct Hemispherical: " + total.toFixed(3);
+  d3.select("div #totalvalue").text(info);
 }
   
 // calculate ring number from patch front id
@@ -215,29 +274,43 @@ function isDirectionFront(dirc){
 }
 
 function update_graph_on_click(){
+  // This is now different as the one that we click on is different form the one that is
+  // going to change.
   var p = d3.select(this);
+  // TODO: add changing color for selection
   var data = p.data()[0];
+  // Select the patch by id
   selectedPatch = getIdByDirection(data.id);
+  // update existing hemisphere
   d3.selectAll(".patch")
   	.attr("stroke-width", 1)
     .attr("fill", function(d) {
-    	d.selected = false;
     	d.value = d.values[selectedDirection][selectedPatch - 1];
-    	return color(d.value); });
-  
+    	return color(d.value);
+    });
+
   d3.selectAll(".patchtitle").text(function(d) { return d.value; });
+
+  d3.selectAll(".inp_patch")
+  	.attr("stroke-width", 1)
+    .attr("fill", function(d) {
+    	d.selected = false;
+    	return 'gray';
+  });  
+
   data.selected = true;
+  p.attr("fill", "yellow");
   p.attr("stroke-width", 3);
-  updateCPText(data.value);
+
+  updateCPText();
 }
 
 function update_on_new_file(parsed_data){
-  var v = null;
   directions = parsed_data.map(function(d){ return d.direction; });
   selectedDirection = selectedDirection % directions.length;
   add_directions_dropdown(directions);
-  
-	// update data
+
+  // update data
   d3.selectAll(".patch").data().forEach(
     function(da){
       da.values = parsed_data.map(function(d, i){
@@ -256,13 +329,13 @@ function update_on_new_file(parsed_data){
   
   d3.selectAll(".patchtitle").text(function(d) { return d.value; });
   d3.select("div #filename").text('');
-  updateCPText(v); // this should be fixed
+  updateCPText();
 }
 
 // load default bsdf
 // var bsdf_path = "SingleClear.xml";
 var bsdf_path = "CS-TBK7-12_112916.xml";
-// var bsdf_path = "https://gist.githubusercontent.com/mostaphaRoudsari/3731c1fa3879ea74e24adb6e1081b887/raw/3043c43b035afd2236a524aa9e38a9159eb8b70e/CS-TBK7-12_112916.xml";
+// var bsdf_path = "https://gist.githubusercontent.com/mostaphaRoudsari/3731c1fa3879ea74e24adb6e1081b887/raw/3043c43b035afd2236a524aa9e38a9159eb8b70e/SingleClear.xml";
 // var bsdf_path = "cl_Tn0.06_blinds.xml";
 load_xml_file(bsdf_path, init_page);
 </script>
