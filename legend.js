@@ -1,79 +1,74 @@
-// generate cont. legend.
-// modified from http://bl.ocks.org/nbremer/a43dbd5690ccd5ac4c6cc392415140e7
-function draw_legend(){
-  
-  var legendWidth = 500;
-  
-  var colorScale = d3.scaleLog()
-  .domain([0.00000001, 50, 100])
-    .range(["#2c7bb6", "#ffff8c", "#d7191c"]);
+// modified from http://bl.ocks.org/syntagmatic/e8ccca52559796be775553b467593a9f
+// License: GPL v3
 
-  //Extra scale since the color scale is interpolated
-  var transmitScale = d3.scaleLog()
-    .domain([0, 100])
-    .range([0, legendWidth]);
+function draw_legend(selector_id, colorscale) {
 
-  //Calculate the variables for the transmit gradient
-  var numStops = 50;
-  transmitRange = transmitScale.domain();
-  transmitRange[2] = transmitRange[1] - transmitRange[0];
-  transmitPoint = [];
+  var legendheight = 500,
+      legendwidth = 80,
+      margin = {top: 10, right: 60, bottom: 10, left: 2};
 
-  for(var i = 0; i < numStops; i++) {
-    transmitPoint.push(i * transmitRange[2] / (numStops - 1) + transmitRange[0]);
-  }
+  var canvas = d3.select(selector_id)
+    .style("height", legendheight + "px")
+    .style("width", legendwidth + "px")
+    .append("canvas")
+    .attr("height", legendheight - margin.top - margin.bottom)
+    .attr("width", 1)
+    .style("height", (legendheight - margin.top - margin.bottom) + "px")
+    .style("width", (legendwidth - margin.left - margin.right) + "px")
+    .style("border", "1px solid #000")
+    .style("position", "absolute")
+    .style("top", (margin.top) + "px")
+    .style("left", (margin.left) + "px")
+    .node();
 
-  svg = d3.select("#viewer").select("svg");
+  var ctx = canvas.getContext("2d");
 
-  //Create the gradient
-  svg.append("defs")
-    .append("linearGradient")
-    .attr("id", "legend")
-    .attr("x1", "0%").attr("y1", "0%")
-    .attr("x2", "100%").attr("y2", "0%")
-    .selectAll("stop") 
-    .data(d3.range(numStops))                
-    .enter().append("stop") 
-    .attr("offset",
-					function(d,i) { return transmitPoint[i] + "%"; })   
-    .attr("stop-color",
-          function(d,i) { return colorScale( transmitPoint[i]); });
+  var legendscale = d3.scaleLog()
+    .range([1, legendheight - margin.top - margin.bottom])
+    .domain([100, 1e-6]);
 
-  // draw legend
-  //Color Legend container
-  var legendsvg = svg.append("g")
-    .attr("class", "legendWrapper")
-    .attr("transform", "translate(" + chwidth / 1.5 + ", 470)");
+  // image data hackery based on http://bl.ocks.org/mbostock/048d21cf747371b11884f75ad896e5a5
+  var image = ctx.createImageData(1, legendheight);
+  d3.range(legendheight).forEach(function(i) {
+    var c = d3.rgb(colorscale(legendscale.invert(i)));
+    image.data[ 4 * i] = c.r;
+    image.data[4 * i + 1] = c.g;
+    image.data[4 * i + 2] = c.b;
+    image.data[4 * i + 3] = 255;
+  });
+  ctx.putImageData(image, 0, 0);
 
-  //Draw the Rectangle
-  legendsvg.append("rect")
-    .attr("class", "legendRect")
-    .attr("x", -legendWidth/2)
-    .attr("y", 0)
-    //.attr("rx", 8/2)
-    .attr("width", legendWidth)
-    .attr("height", 16)
-    .style("fill", "url(#legend)");
+  // A simpler way to do the above, but possibly slower. keep in mind the legend width is stretched because the width attr of the canvas is 1
+  // See http://stackoverflow.com/questions/4899799/whats-the-best-way-to-set-a-single-pixel-in-an-html5-canvas
+  /*
+  d3.range(legendheight).forEach(function(i) {
+    ctx.fillStyle = colorscale(legendscale.invert(i));
+    ctx.fillRect(0,i,1,1);
+  });
+  */
 
-  //Append title
-  legendsvg.append("text")
-    .attr("class", "legendTitle")
-    .attr("x", 0)
-    .attr("y", 30)
-    .style("text-anchor", "middle")
-    .text("% of Incident Flux Existing Patch");
+  var legendaxis = d3.axisRight()
+    .scale(legendscale)
+    .tickSize(10)
+    .ticks(8)
+    .tickPadding(13)
+    .tickFormat(
+      d3.format(".1e")
+    );
+    // .tickFormat(d3.format(".1e"));
 
-  //Set scale for x-axis
-  var xScale = d3.scaleLog()
-     .range([-legendWidth / 2, 0, legendWidth / 2])
-     .domain([0.00000001, 50, 100]);
+  var svg = d3.select(selector_id)
+    .append("svg")
+    .attr("height", (legendheight) + "px")
+    .attr("width", (legendwidth) + "px")
+    .style("position", "absolute")
+    .style("left", "0px")
+    .style("top", "0px");
 
-  legendsvg.append("g")
-    .attr("class", "axis axis--x")
-  .attr("transform", "translate(0, 8)")
-    .call(
-      d3.axisTop(xScale)
-      .ticks(6)
-      .tickFormat(function(d) { return d + "%"; })
-      );
-}
+  svg
+    .append("g")
+    .attr("class", "axis")
+    .attr("transform", "translate(" + (legendwidth - margin.left - margin.right + 3) + "," + (margin.top) + ")")
+    .call(legendaxis);
+};
+

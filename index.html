@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 <!-- Google Font -->
-	<link href='https://fonts.googleapis.com/css?family=Open+Sans:300,400' rel='stylesheet' type='text/css'>
+	<!-- <link href='https://fonts.googleapis.com/css?family=Open+Sans:300,400' rel='stylesheet' type='text/css'> -->
 
 <style>
 
@@ -9,12 +9,20 @@ text {
   font-family: 'Open Sans', sans-serif;
   font-size: 9px;
   text-anchor: middle;
+  user-select: none;
+  cursor: none;
 }
 
 #wrapper {
-    width: 1200px;
-  	height: 600px;
+    width: 1080px;
+  	height: 800px;
     overflow: hidden;
+}
+
+#wrapper:after {
+  content: "";
+  display: table;
+  clear: both;
 }
   
 #controlPanel {
@@ -24,30 +32,38 @@ text {
 }
   
 #viewer {
+    width: 600px;
   	height: 500px;
-    overflow: hidden;
+    float: left;
+}
+
+#legend {
+    position: relative;
+  	height: 500px;
+    float: left;
 }
 </style>
 
 <body>
 <div id="wrapper">
     <div id="controlPanel">
-    <div id="vtitle" style="font-size: 20px">BSDF Viewer</div>
-    <br>
-    <input type="file" id="fileinput" style="width:200px;"> </input>
-    <div id="filename"></div>
-    <br>
-    <div id="direction"></div>
-    <br>
-  	<div id="selecteddir"></div>  
-  	<div id="totalvalue"></div>  
-  	<div id="selectedpatch"></div>  
-    <hr>
-    <div>Incident Hemisphere</div>
-    <div id="incident"></div>
-    <hr>
+      <div id="vtitle" style="font-size: 20px">BSDF Viewer</div>
+      <br>
+      <input type="file" id="fileinput" style="width:200px;"> </input>
+      <div id="filename"></div>
+      <br>
+      <div id="direction"></div>
+      <br>
+      <div id="selecteddir"></div>  
+      <div id="totalvalue"></div>  
+      <div id="selectedpatch"></div>  
+      <hr>
+      <div>Incident Hemisphere</div>
+      <div id="incident"></div>
+      <hr>
     </div>
     <div id="viewer"></div>
+    <div id="legend"></div>
     <div id="info"  style="color: gray">
       <p> How to use this viewer: </p>
       <p>1. Click on each patch to update the values based on the new angle of incident.<br>2. Hover on each patch to see the values.</p>
@@ -57,7 +73,7 @@ text {
   	</div>
 </div>
 </body>
-<script src="https://d3js.org/d3.v4.min.js"></script>
+<script src="d3.v4.min.js"></script>
 <script src="loadbsdf.js"></script>
 <script src="legend.js"></script>
 <script src="add_direction_select.js"></script>
@@ -73,7 +89,7 @@ text {
       scale = [0.5, 1, 1, 1, 1, 1, 1, 1],                    // not sure how I use this?
       radius = [0.5, 1, 1, 1, 1, 1, 1, 1, 2];                // arc radius for each ring
 
-  var width = 960,
+  var width = 600,
       chwidth = 600,
       height = 500,
       cwidth = 22.5,
@@ -83,9 +99,8 @@ text {
 			selectedDirection = 0;
 
 //Base the color scale on trans / reflectance values
-var color = d3.scaleLog()
-  .domain([0.00000001, 50, 100])
-  .range(["#2c7bb6", "#ffff8c", "#d7191c"]);
+var log_scale = d3.scaleLog().domain([1e-6, 100])
+var color = d3.scaleSequential((d) => d3.interpolatePlasma(log_scale(d)));
 
 // assign readXMLfile to browse file
 document.getElementById('fileinput').onchange = function(evt) {readXMLFile(evt.target.files[0]);};
@@ -150,10 +165,10 @@ function init_page(parsed_data){
       .attr("width", width)
       .attr("height", height)
       .append("g")
-      .attr("transform", "translate(" + chwidth / 1.5 +  "," + ((height / 2) - 30) + ")");
+      .attr("transform", "translate(" + width / 2  +  "," + height / 2 + ")");
 
   var inp_svg =  d3.select("body").select("#incident").append("svg")
-      .attr("width", width / 2)
+      .attr("width", 400)
       .attr("height", height/ 2)
       .append("g")
       .attr("transform", "translate(" + 200 + "," + ((height / 3) - 50) + ")");
@@ -222,7 +237,7 @@ function init_page(parsed_data){
   //   .attr("fill", "black")
   //   .text(function(d) { return getIdByDirection(d.id); });
 
-  draw_legend();
+  draw_legend('#legend', color);
 
   d3.select("div #filename").text(bsdf_path).style("color", "gray");
 
@@ -333,9 +348,7 @@ function update_on_new_file(parsed_data){
 }
 
 // load default bsdf
-// var bsdf_path = "SingleClear.xml";
 var bsdf_path = "CS-TBK7-12_112916.xml";
-// var bsdf_path = "https://gist.githubusercontent.com/mostaphaRoudsari/3731c1fa3879ea74e24adb6e1081b887/raw/3043c43b035afd2236a524aa9e38a9159eb8b70e/SingleClear.xml";
-// var bsdf_path = "cl_Tn0.06_blinds.xml";
+// var bsdf_path = "https://gist.githubusercontent.com/mostaphaRoudsari/3731c1fa3879ea74e24adb6e1081b887/raw/3043c43b035afd2236a524aa9e38a9159eb8b70e/CS-TBK7-12_112916.xml";
 load_xml_file(bsdf_path, init_page);
 </script>
