@@ -8,23 +8,6 @@ understanding XML files.
 
 */
 
-// this is from Andy's source code and also doesn't give me the same results! :|
-// const c_factor = [
-// 	0.024, 0.023, 0.023, 0.023, 0.023, 0.023, 0.023, 0.023, 0.023, 0.022, 0.022, 0.022,
-// 	0.022, 0.022, 0.022, 0.022, 0.022, 0.022, 0.022, 0.022, 0.022, 0.022, 0.022, 0.022,
-// 	0.022, 0.024, 0.024, 0.024, 0.024, 0.024, 0.024, 0.024, 0.024, 0.024, 0.024, 0.024,
-// 	0.024, 0.024, 0.024, 0.024, 0.024, 0.024, 0.024, 0.024, 0.024, 0.022, 0.022, 0.022,
-// 	0.022, 0.022, 0.022, 0.022, 0.022, 0.022, 0.022, 0.022, 0.022, 0.022, 0.022, 0.022,
-// 	0.022, 0.022, 0.022, 0.022, 0.022, 0.022, 0.022, 0.022, 0.022, 0.022, 0.022, 0.022,
-// 	0.022, 0.022, 0.022, 0.022, 0.022, 0.022, 0.022, 0.022, 0.022, 0.022, 0.022, 0.022,
-// 	0.022, 0.022, 0.022, 0.022, 0.022, 0.022, 0.022, 0.022, 0.022, 0.020, 0.020, 0.020,
-// 	0.020, 0.020, 0.020, 0.020, 0.020, 0.020, 0.020, 0.020, 0.020, 0.020, 0.020, 0.020,
-// 	0.020, 0.020, 0.020, 0.020, 0.020, 0.020, 0.020, 0.020, 0.020, 0.022, 0.022, 0.022,
-// 	0.022, 0.022, 0.022, 0.022, 0.022, 0.022, 0.022, 0.022, 0.022, 0.022, 0.022, 0.022,
-// 	0.022, 0.018, 0.018, 0.018, 0.018, 0.018, 0.018, 0.018, 0.018, 0.018, 0.018, 0.018,
-// 	0.018
-// ];
-
 const c_factor = [
 	41.90425372, 42.87638872, 42.87638872, 42.87638872, 42.87638872, 42.87638872,
 	42.87638872, 42.87638872, 42.87638872, 45.62809984, 45.62809984, 45.62809984,
@@ -52,6 +35,14 @@ const c_factor = [
 	57.02153605
 ];
 
+
+function transpose(m){
+
+	return m[0].map((x,i) => m.map(x => x[i]));
+
+}
+
+
 function split_list(arr, n) {
 	var res = [];
 	while (arr.length) {
@@ -59,6 +50,7 @@ function split_list(arr, n) {
 	}
 	return res;
   }
+
 
 function load_xml_file(xmlFile, callback){
 	d3.xml(xmlFile, function(error, data) {
@@ -93,13 +85,14 @@ function parse_xml_data(data){
 				.textContent.split(/[\s,]+/)
 				.filter(function(f){return f != ''}),
 				145);
+			const final_data = transpose(rawdata);
 			return {
 				direction: wavelength + " " + direction_type,
 				cAngleBasis: block.querySelector("ColumnAngleBasis").textContent,
 				rAngleBasis: block.querySelector("RowAngleBasis").textContent,
 				scatteringDataType: block.querySelector("ScatteringDataType").textContent,
 				data: [].map.call(
-					rawdata, function(d) {
+					final_data, function(d) {
 						return d.map(
 							function(f, i){
 								return parseFloat(f) * 100 / c_factor[i];
