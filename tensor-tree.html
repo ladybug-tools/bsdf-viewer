@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<!-- Google Font -->
+	<!-- <link href='https://fonts.googleapis.com/css?family=Open+Sans:300,400' rel='stylesheet' type='text/css'> -->
+
+<style>
+
+text {
+  font-family: 'Open Sans', sans-serif;
+  font-size: 9px;
+  text-anchor: middle;
+  user-select: none;
+  cursor: none;
+}
+
+#wrapper {
+    width: 1080px;
+  	height: 800px;
+    overflow: hidden;
+}
+
+#wrapper:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+  
+#controlPanel {
+    width: 400px;
+  	height: 500px;
+    float:left;
+}
+  
+#viewer {
+    width: 600px;
+  	height: 500px;
+    float: left;
+}
+
+#legend {
+    position: relative;
+  	height: 500px;
+    float: left;
+}
+</style>
+
+<body>
+<div id="wrapper">
+    <div id="controlPanel">
+      <div id="vtitle" style="font-size: 20px">BSDF TensorTree Loader</div>
+      <br>
+      <input type="file" id="ttfileinput" style="width:200px;"> </input>
+      <div id="filename"></div>
+      <br>
+      <div id="direction"></div>
+      <br>
+      <div id="selecteddir"></div>
+      <div id="totalvalue"></div>
+      <div id="selectedpatch"></div>
+    </div>
+    <div id="viewer"></div>
+    <div id="legend"></div>
+    <div id="info"  style="color: gray">
+      <p> How to use this viewer: </p>
+      <p> What viewer?</p>
+  	</div>
+</div>
+</body>
+<script src="libs/d3.v4.min.js"></script>
+<script src="libs/loadttbsdf.js"></script>
+<script src="libs/add_direction_select.js"></script>
+
+<script>
+
+// assign readXMLfile to browse file
+document.getElementById('ttfileinput').onchange = function(evt) {readTTXMLFile(evt.target.files[0]);};
+
+///////////////////
+///initiate page///
+///////////////////
+function init_page(parsed_data){
+
+  directions = parsed_data.map(function(d){ return d.direction; });
+
+  var data = [], 
+    inp_data = [];
+
+  d3.select("div #filename").text(bsdf_path).style("color", "gray");
+
+  add_directions_dropdown(directions);
+}
+
+
+function update_on_new_file(parsed_data){
+  directions = parsed_data.map(function(d){ return d.direction; });
+  selectedDirection = selectedDirection % directions.length;
+  add_directions_dropdown(directions);
+}
+
+// load default bsdf
+var bsdf_path = "bsdf/tensortree/blinds_20deg_t45.xml";
+var bsdf_path = "https://gist.githubusercontent.com/mostaphaRoudsari/c837babff9f57f3ada064f2b53c2d1e9/raw/1e81ec5dd37dce01413c8f032793ce2ed2780b87/blinds_20deg_t45.xml";
+load_tt_xml_file(bsdf_path, init_page);
+</script>
