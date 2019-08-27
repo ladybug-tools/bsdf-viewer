@@ -73,10 +73,10 @@ text {
   	</div>
 </div>
 </body>
-<script src="d3.v4.min.js"></script>
-<script src="loadbsdf.js"></script>
-<script src="legend.js"></script>
-<script src="add_direction_select.js"></script>
+<script src="libs/d3.v4.min.js"></script>
+<script src="libs/loadbsdf.js"></script>
+<script src="libs/legend.js"></script>
+<script src="libs/add_direction_select.js"></script>
 
 <script>
 
@@ -323,7 +323,7 @@ function update_on_new_file(parsed_data){
 }
 
 // load default bsdf
-var bsdf_path = "blinds_20deg_noGlazing_Klems.xml";
+var bsdf_path = "bsdf/klems/blinds_20deg_noGlazing_Klems.xml";
 // var bsdf_path = "https://gist.githubusercontent.com/mostaphaRoudsari/3731c1fa3879ea74e24adb6e1081b887/raw/3043c43b035afd2236a524aa9e38a9159eb8b70e/CS-TBK7-12_112916.xml";
 load_xml_file(bsdf_path, init_page);
 </script>
