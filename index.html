@@ -2,68 +2,54 @@
 <meta charset="utf-8">
 <!-- Google Font -->
 	<!-- <link href='https://fonts.googleapis.com/css?family=Open+Sans:300,400' rel='stylesheet' type='text/css'> -->
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+<link rel="stylesheet" href="css/customize.css">
 
-<style>
-
-text {
-  font-family: 'Open Sans', sans-serif;
-  font-size: 9px;
-  text-anchor: middle;
-  user-select: none;
-  cursor: none;
-}
-
-#wrapper {
-    width: 1080px;
-  	height: 800px;
-    overflow: hidden;
-}
-
-#wrapper:after {
-  content: "";
-  display: table;
-  clear: both;
-}
-  
-#controlPanel {
-    width: 400px;
-  	height: 500px;
-    float:left;
-}
-  
-#viewer {
-    width: 600px;
-  	height: 500px;
-    float: left;
-}
-
-#legend {
-    position: relative;
-  	height: 500px;
-    float: left;
-}
-</style>
 
 <body>
-<div id="wrapper">
-    <div id="controlPanel">
-      <div id="vtitle" style="font-size: 20px">BSDF Viewer</div>
-      <br>
-      <input type="file" id="fileinput" style="width:200px;"> </input>
-      <div id="filename"></div>
-      <br>
-      <div id="direction"></div>
-      <br>
-      <div id="selecteddir"></div>  
-      <div id="totalvalue"></div>  
-      <div id="selectedpatch"></div>  
-      <hr>
-      <div>Incident Hemisphere</div>
-      <div id="incident"></div>
-      <hr>
+<div class="container" id="wrapper" style="min-width:992">
+  <div id="vtitle">
+    <h4 class="display-4">BSDF Viewer</h4>
+  </div>
+  <hr>
+  <div class="form-group row">
+    <div class="col-lg-7">
+      <p>
+        <input type="file" id="fileinput" class="custom-file-input">
+        <label class="custom-file-label" for="customFile" id="filename">Choose BSDF File</label>
+      </p>
     </div>
-    <div id="viewer"></div>
-    <div id="legend"></div>
+  </div>
+  <div class="row">
+    <div class="col-lg-4">
+        <div id="controlPanel">
+            <div id="direction" class="form-group"></div>
+            <div id="patch-number-toggle" class="form-group"></div>
+          <br>
+          <hr>
+        </div>
+        <h4>Incident Hemisphere</h4>
+         <div id="incidentpatch"></div>
+        <div id="incident"></div>
+      </div>
+      <div class="col-lg-8">
+      <table width="100%">
+        <tr>
+          <td>
+            <div style="margin-left: 30px">
+              <h4>Outgoing Hemisphere<small class="text-muted" id="direction"></small></h4>
+              <div id="directhemispherical"></div>
+            </div>
+            <div id="viewer"></div>
+          </td>
+          <td width="90px" id="legend_cell">
+            <div id="legend"></div>
+          </td>
+        </tr>
+      </table>
+    </div>
+    </div>
+    <hr>
     <div id="info"  style="color: gray">
       <p> How to use this viewer: </p>
       <p>1. Click on each patch to update the values based on the new angle of incident.<br>2. Hover on each patch to see the values.</p>
@@ -77,6 +63,11 @@ text {
 <script src="libs/loadbsdf.js"></script>
 <script src="libs/legend.js"></script>
 <script src="libs/add_direction_select.js"></script>
+<script src="libs/controlpanel.js"></script>
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
 
 <script>
 
@@ -89,17 +80,18 @@ text {
       scale = [0.5, 1, 1, 1, 1, 1, 1, 1],                    // not sure how I use this?
       radius = [0.5, 1, 1, 1, 1, 1, 1, 1, 2];                // arc radius for each ring
 
-  var width = 600,
-      chwidth = 600,
-      height = 500,
-      cwidth = 22.5,
+  var width = document.getElementById("viewer").clientWidth,
+      width_incident = Math.min(document.getElementById("incident").clientWidth, document.getElementById("incident").clientWidth),
+      height = width,
+      cwidth = width / 20,
+      cwidth_incident = width_incident / 20
       PI2 = 2 * Math.PI
       HPI = Math.PI / 2,
       selectedPatch = 1,      // this is not the id but the correct id which is selected
 			selectedDirection = 0;
 
 //Base the color scale on trans / reflectance values
-var log_scale = d3.scaleLog().domain([1e-6, 100])
+var log_scale = d3.scaleLog().domain([1e-3, 100])
 var color = d3.scaleSequential((d) => d3.interpolatePlasma(log_scale(d)));
 
 // assign readXMLfile to browse file
@@ -149,8 +141,8 @@ function init_page(parsed_data){
          'selected': selected,
          'startAngle': (j + 0.5) * angle + HPI,
          'endAngle': (j - 0.5) * angle + HPI,
-         'innerRadius': cwidth / 2 * sum,
-         'outerRadius': cwidth / 2 * (sum + radius[i])
+         'innerRadius': cwidth_incident * sum,
+         'outerRadius': cwidth_incident * (sum + radius[i])
          }
       )
     }
@@ -168,10 +160,10 @@ function init_page(parsed_data){
       .attr("transform", "translate(" + width / 2  +  "," + height / 2 + ")");
 
   var inp_svg =  d3.select("body").select("#incident").append("svg")
-      .attr("width", 400)
-      .attr("height", height/ 2)
+      .attr("width", width_incident)
+      .attr("height", width_incident)
       .append("g")
-      .attr("transform", "translate(" + 200 + "," + ((height / 3) - 50) + ")");
+      .attr("transform", "translate(" + width_incident / 2 + "," + (width_incident / 2) + ")");
 
   var ring = svg.selectAll(".ring")
       .data(data)
@@ -243,6 +235,10 @@ function init_page(parsed_data){
 
   add_directions_dropdown(directions);
 
+  //patch number toggle not yet implemented
+  //add_patch_number_toggle();
+
+
   // add data as text
   updateCPText();
 }
@@ -253,8 +249,10 @@ function updateCPText(){
   var total = 0;
   d3.selectAll(".patch").data().forEach(function(d){ total += d.value; });
   d3.select("div #selecteddir").text(directions[selectedDirection]);
-  var info = "Incident Patch: " + selectedPatch + "    |   Direct Hemispherical: " + total.toFixed(3);
-  d3.select("div #totalvalue").text(info);
+  var info = "Incident Patch: " + selectedPatch;
+  var outgoing_info = "Direct Hemispherical: " + total.toFixed(2) + "%"
+  d3.select("div #incidentpatch").text(info);
+  d3.select("div #directhemispherical").text(outgoing_info);
 }
   
 // calculate ring number from patch front id
@@ -316,9 +314,9 @@ function update_on_new_file(parsed_data){
     	d.value = d.values[selectedDirection][selectedPatch - 1];
     	if (d.id == selectedPatch) v = d.value;
     	return color(d.value); });
-  
   d3.selectAll(".patchtitle").text(function(d) { return d.value; });
-  d3.select("div #filename").text('');
+
+  d3.select("#filename").text(document.getElementById('fileinput').value);
   updateCPText();
 }
 
