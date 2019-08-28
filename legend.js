@@ -3,13 +3,14 @@
 
 function draw_legend(selector_id, colorscale) {
 
-  var legendheight = 500,
-      legendwidth = 80,
+  var legendheight = document.getElementById("legend_cell").clientHeight,
+      legendwidth = document.getElementById("legend_cell").clientWidth,
       margin = {top: 10, right: 60, bottom: 10, left: 2};
 
   var canvas = d3.select(selector_id)
     .style("height", legendheight + "px")
     .style("width", legendwidth + "px")
+    .style("position", "relative")
     .append("canvas")
     .attr("height", legendheight - margin.top - margin.bottom)
     .attr("width", 1)
@@ -25,7 +26,7 @@ function draw_legend(selector_id, colorscale) {
 
   var legendscale = d3.scaleLog()
     .range([1, legendheight - margin.top - margin.bottom])
-    .domain([100, 1e-6]);
+    .domain([100, 1e-3]);
 
   // image data hackery based on http://bl.ocks.org/mbostock/048d21cf747371b11884f75ad896e5a5
   var image = ctx.createImageData(1, legendheight);
@@ -50,10 +51,10 @@ function draw_legend(selector_id, colorscale) {
   var legendaxis = d3.axisRight()
     .scale(legendscale)
     .tickSize(10)
-    .ticks(8)
+    .ticks(4)
     .tickPadding(13)
     .tickFormat(
-      d3.format(".1e")
+      d3.format("6.3")
     );
     // .tickFormat(d3.format(".1e"));
 

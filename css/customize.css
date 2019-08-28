@@ -1,0 +1,44 @@
+
+.patch_id {
+  font-family: 'Open Sans', sans-serif;
+  font-size: 9px;
+  text-anchor: middle;
+  user-select: none;
+  cursor: none;
+}
+.custom-file-label {
+    margin-left: 15px;
+    margin-right: 15px;
+}
+
+/*
+#wrapper {
+    width: 1080px;
+    height: 800px;
+    overflow: hidden;
+}
+
+#wrapper:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+  
+#controlPanel {
+    width: 400px;
+    height: 500px;
+    float:left;
+}
+  
+#viewer {
+    width: 600px;
+    height: 500px;
+    float: left;
+}
+
+#legend {
+    position: relative;
+    height: 500px;
+    float: left;
+}
+*/
