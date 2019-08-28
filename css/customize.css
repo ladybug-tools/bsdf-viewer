@@ -11,6 +11,10 @@
     margin-right: 15px;
 }
 
+p {
+  font-size: 14px;
+}
+
 /*
 #wrapper {
     width: 1080px;

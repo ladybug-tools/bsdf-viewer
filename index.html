@@ -11,17 +11,24 @@
   <div id="vtitle">
     <h4 class="display-4">BSDF Viewer</h4>
   </div>
+  <hr>
   <div class="form-group row">
     <div class="col-lg-7">
-      <input type="file" id="fileinput" class="custom-file-input">
-      <label class="custom-file-label" for="customFile" id="filename">Choose BSDF File</label>
+      <p>
+        <input type="file" id="fileinput" class="custom-file-input">
+        <label class="custom-file-label" for="customFile" id="filename">Choose BSDF File</label>
+      </p>
     </div>
   </div>
-  <hr>
   <div class="row">
     <div class="col-lg-4">
         <div id="controlPanel">
-          <div id="direction"></div>
+            <div>
+              <p id="direction"></p>
+            </div>
+            <div>
+              <p  id="patch-number-toggle"></p>
+            </div>
           <br>
           <hr>
         </div>
@@ -60,6 +67,7 @@
 <script src="libs/loadbsdf.js"></script>
 <script src="libs/legend.js"></script>
 <script src="libs/add_direction_select.js"></script>
+<script src="libs/controlpanel.js"></script>
 
 <script>
 
@@ -226,6 +234,7 @@ function init_page(parsed_data){
   d3.select("div #filename").text(bsdf_path).style("color", "gray");
 
   add_directions_dropdown(directions);
+  add_patch_number_toggle();
 
   // add data as text
   updateCPText();
@@ -302,8 +311,10 @@ function update_on_new_file(parsed_data){
     	d.value = d.values[selectedDirection][selectedPatch - 1];
     	if (d.id == selectedPatch) v = d.value;
     	return color(d.value); });
-  
-  d3.selectAll(".patchtitle").text(function(d) { return d.value; });
+  if (document.getElementById("patch-number-select").value == "show"){
+    d3.selectAll(".patchtitle").text(function(d) { return d.value; });
+  }
+
   d3.select("#filename").text(document.getElementById('fileinput').value);
   updateCPText();
 }
