@@ -26,6 +26,9 @@ The BSDF viewer is using [D3js](https://github.com/d3/) for interactive visualiz
 
 The legend is modified from [this example](http://bl.ocks.org/syntagmatic/e8ccca52559796be775553b467593a9f).
 
+The viewer is using [polygon-clipping](https://github.com/mfogel/polygon-clipping)
+library for merging outgoing patches for TensorTree BSDFs.
+
 So many thanks to:
 
 - Greg Ward for Radiance, for answering all my stupid questions about BSDF and
